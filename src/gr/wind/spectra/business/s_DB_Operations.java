@@ -57,6 +57,43 @@ public class s_DB_Operations
 		return found;
 	}
 
+	public void updateUsageStatisticsForMethod(String methodName) throws SQLException, ParseException
+	{
+		// Get Date and Time and create a pattern of time representation
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00");
+		LocalDateTime now = LocalDateTime.now();
+
+		// Check If today row exists
+		boolean exists = checkIfCriteriaExists("Stats_Test_NumOfRequestsPerMethod", new String[] { "Date" },
+				new String[] { dtf.format(now) }, new String[] { "DateTime" });
+
+		// If we have not today line entry of statistics the please create it
+		if (!exists)
+		{
+			insertValuesInTable("Stats_Test_NumOfRequestsPerMethod", new String[] { "Date" },
+					new String[] { dtf.format(now) }, new String[] { "DateTime" });
+		}
+
+		// Get Latest Value
+		String latestValue = getOneValue("Stats_Test_NumOfRequestsPerMethod", methodName, new String[] { "Date" },
+				new String[] { dtf.format(now) }, new String[] { "DateTime" });
+
+		if (latestValue == null)
+		{
+			latestValue = "0";
+		}
+
+		// Convert to Integer in order to add + 1
+		int latestValueInteger = Integer.parseInt(latestValue);
+		latestValueInteger = latestValueInteger + 1;
+
+		// Convert back to String
+		String updateDLatestValue = String.valueOf(latestValueInteger);
+		updateValuesForOneColumn("Stats_Test_NumOfRequestsPerMethod", methodName, updateDLatestValue,
+				new String[] { "Date" }, new String[] { dtf.format(now) }, new String[] { "DateTime" });
+
+	}
+
 	public boolean insertValuesInTable(String table, String[] columnNames, String[] columnValues, String[] types)
 			throws SQLException, ParseException
 	{
@@ -142,6 +179,11 @@ public class s_DB_Operations
 			} else if (predicateTypes[i].equals("Integer"))
 			{
 				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			} else if (predicateTypes[i].equals("DateTime"))
+			{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dateTime = LocalDateTime.parse(predicateValues[i], formatter);
+				pst.setObject(i + 1, dateTime);
 			}
 		}
 
@@ -174,6 +216,11 @@ public class s_DB_Operations
 			} else if (predicateTypes[i].equals("Integer"))
 			{
 				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			} else if (predicateTypes[i].equals("DateTime"))
+			{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dateTime = LocalDateTime.parse(predicateValues[i], formatter);
+				pst.setObject(i + 1, dateTime);
 			}
 		}
 		// pst.execute();
@@ -257,6 +304,11 @@ public class s_DB_Operations
 			} else if (predicateTypes[i].equals("Integer"))
 			{
 				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			} else if (predicateTypes[i].equals("DateTime"))
+			{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime dateTime = LocalDateTime.parse(predicateValues[i], formatter);
+				pst.setObject(i + 1, dateTime);
 			}
 		}
 

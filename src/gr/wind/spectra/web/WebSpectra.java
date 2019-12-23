@@ -158,6 +158,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			}
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("GetHierarchy");
+
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
@@ -458,6 +461,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			 *	•	Exception 2 : RootHierarchyNode = FTTC_Location_Element , HierarchyTableNamePath : Site Name
 			 */
 			Help_Func.declineSubmissionOnCertainHierarchyLevels(myHier);
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("SubmitOutage");
 
 			// Calculate Total number per Indicent, of customers affected per incident
 			int incidentDataCustomersAffected = 0;
@@ -805,6 +811,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("GetOutageStatus");
+
 			String numOfRows = "0";
 			ResultSet rs = null;
 			if (IncidentID.equals("*"))
@@ -917,6 +926,9 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ Password);
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("ModifyOutage");
 
 			ProductOfModify pom = null;
 
@@ -1122,6 +1134,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				throw new InvalidInputException("User name or Password incorrect!", "Error 100");
 			}
 
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("CloseOutage");
+
 			ProductOfCloseOutage poca = null;
 
 			// Check if Required fields are empty
@@ -1285,6 +1300,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				// Check if it has the appropriate format
 				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
+
+			// Update Statistics
+			wb.s_dbs.updateUsageStatisticsForMethod("NLU_Active");
 
 			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
