@@ -1301,9 +1301,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("NLU_Active");
-
 			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
