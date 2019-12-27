@@ -64,18 +64,18 @@ public class s_DB_Operations
 		LocalDateTime now = LocalDateTime.now();
 
 		// Check If today row exists
-		boolean exists = checkIfCriteriaExists("Stats_Test_NumOfRequestsPerMethod", new String[] { "Date" },
+		boolean exists = checkIfCriteriaExists("Test_Stats_NumOfRequestsPerMethod", new String[] { "Date" },
 				new String[] { dtf.format(now) }, new String[] { "DateTime" });
 
 		// If we have not today line entry of statistics the please create it
 		if (!exists)
 		{
-			insertValuesInTable("Stats_Test_NumOfRequestsPerMethod", new String[] { "Date" },
+			insertValuesInTable("Test_Stats_NumOfRequestsPerMethod", new String[] { "Date" },
 					new String[] { dtf.format(now) }, new String[] { "DateTime" });
 		}
 
 		// Update value using LAST_INSERT_ID method of MySQL e.g. SET ModifyOutage = LAST_INSERT_ID(ModifyOutage+1)
-		updateValuesBasedOnLastInsertID("Stats_Test_NumOfRequestsPerMethod", methodName, new String[] { "Date" },
+		updateValuesBasedOnLastInsertID("Test_Stats_NumOfRequestsPerMethod", methodName, new String[] { "Date" },
 				new String[] { dtf.format(now) }, new String[] { "DateTime" });
 
 	}
