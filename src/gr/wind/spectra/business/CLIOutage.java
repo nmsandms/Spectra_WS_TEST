@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 //Import log4j classes.
@@ -327,6 +328,24 @@ public class CLIOutage
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
 
 					allAffectedServices = "Data";
+				}
+
+				// Get String representation of EndTime Date object
+				if (Duration != null)
+				{
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+					Calendar cal = Calendar.getInstance(); // creates calendar
+					cal.setTime(StartTime); // sets calendar time/date
+					cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(Duration));
+					Date myActualEndTime = cal.getTime(); // returns new date object, one hour in the future
+
+					EndTimeString = dateFormat.format(myActualEndTime);
+				} else if (EndTime != null)
+				{
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					EndTimeString = dateFormat.format(EndTime);
+
 				}
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", IncidentID, Priority,
