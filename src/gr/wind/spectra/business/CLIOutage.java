@@ -367,9 +367,15 @@ public class CLIOutage
 				}
 
 				// Get String representation of EndTime Date object
-				// If Duration is set then calculate based in its value the end time that is published in NLU
-				// Else use the EndTime defined from the Sumbission of the ticket
-				if (foundDuration != null)
+				// If End Time is NOT set but Duration is set then calculate the new published End Time...
+				// else use the EndTime defined from the Sumbission of the ticket
+				if (foundEndTime != null)
+				{
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					EndTimeString = dateFormat.format(foundEndTime);
+
+				}
+				else if (foundDuration != null)
 				{
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -379,13 +385,8 @@ public class CLIOutage
 					Date myActualEndTime = cal.getTime(); // returns new date object, one hour in the future
 
 					EndTimeString = dateFormat.format(myActualEndTime);
-				} else if (foundEndTime != null)
-				{
-					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					EndTimeString = dateFormat.format(foundEndTime);
-
 				}
-
+				
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");
