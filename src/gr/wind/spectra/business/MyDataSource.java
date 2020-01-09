@@ -31,7 +31,7 @@ public class MyDataSource
 		// Resource is obtained from file:
 		// /opt/glassfish5/glassfish/domains/domain1/lib/classes/database.properties
 
-		DATABASE_URL1 = ResourceBundle.getBundle("database").getString("DATABASE_URL");
+		DATABASE_URL1 = ResourceBundle.getBundle("test_database").getString("DATABASE_URL");
 		USERNAME1 = ResourceBundle.getBundle("database_credentials").getString("USERNAME");
 		PASSWORD1 = ResourceBundle.getBundle("database_credentials").getString("PASSWORD");
 
@@ -58,7 +58,7 @@ public class MyDataSource
 
 		ds.close();
 		ResourceBundle.clearCache();
-		DATABASE_URL2 = ResourceBundle.getBundle("database").getString("DATABASE_URL");
+		DATABASE_URL2 = ResourceBundle.getBundle("test_database").getString("DATABASE_URL");
 		USERNAME2 = ResourceBundle.getBundle("database_credentials").getString("USERNAME");
 		PASSWORD2 = ResourceBundle.getBundle("database_credentials").getString("PASSWORD");
 

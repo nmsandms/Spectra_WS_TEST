@@ -192,7 +192,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -374,8 +374,7 @@ public class CLIOutage
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					EndTimeString = dateFormat.format(foundEndTime);
 
-				}
-				else if (foundDuration != null)
+				} else if (foundDuration != null)
 				{
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -386,7 +385,7 @@ public class CLIOutage
 
 					EndTimeString = dateFormat.format(myActualEndTime);
 				}
-				
+
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");

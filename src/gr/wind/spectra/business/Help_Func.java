@@ -37,7 +37,7 @@ public class Help_Func
 	{
 		// Properties file
 		File databasePropertiesFile = new File(
-				"/opt/glassfish5/glassfish/domains/domain1/lib/classes/database.properties");
+				"/opt/glassfish5/glassfish/domains/domain1/lib/classes/test_database.properties");
 
 		// Its modification time
 		long modTimeOfPropertiesFile_LongFormat = databasePropertiesFile.lastModified();
