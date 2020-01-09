@@ -1066,10 +1066,17 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 
 				// Update Operation
-				int numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
-						arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
-						new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
-						new String[] { "String", "Integer" });
+				int numOfRowsUpdated = 0;
+				try
+				{
+					numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+							arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
+							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+							new String[] { "String", "Integer" });
+				} catch (Exception e)
+				{
+					throw new InvalidInputException("An Error occured during modification of data!", "Error 1500");
+				}
 
 				if (numOfRowsUpdated == 1)
 				{
@@ -1183,22 +1190,39 @@ public class WebSpectra implements InterfaceWebSpectra
 					{
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & Scheduled");
-						// Update Operation
-						numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
-								new String[] { "IncidentStatus" }, new String[] { "CLOSED" }, new String[] { "String" },
-								new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
-								new String[] { "String", "Integer" });
+
+						try
+						{
+							// Update Operation
+							numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+									new String[] { "IncidentStatus" }, new String[] { "CLOSED" },
+									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
+									new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+						} catch (Exception e)
+						{
+							throw new InvalidInputException("An Error occured during closure/submission of data!",
+									"Error 1500");
+						}
 
 					} else
 					{
 						logger.info(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
 								+ IncidentID + " | OutageID: " + OutageID + " is OPEN & not Scheduled");
-						// If it is NOT scheduled then the End Time should be updated
-						numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
-								new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
-								new String[] { "CLOSED", Help_Func.now(), RequestID },
-								new String[] { "String", "Date", "String" }, new String[] { "IncidentID", "OutageID" },
-								new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
+
+						try
+						{
+							// If it is NOT scheduled then the End Time should be updated
+							numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+									new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
+									new String[] { "CLOSED", Help_Func.now(), RequestID },
+									new String[] { "String", "Date", "String" },
+									new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
+									new String[] { "String", "Integer" });
+						} catch (Exception e)
+						{
+							throw new InvalidInputException("An Error occured during closure/submission of data!",
+									"Error 1500");
+						}
 					}
 
 					// Only one line should always be updated in this operation
