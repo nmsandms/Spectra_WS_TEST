@@ -148,8 +148,22 @@ public class SQLStatementToCSV extends Thread
 
 			while (rs_forDB.next())
 			{
+
 				String CliValue = rs_forDB.getString("CliValue");
+
+				// Check if it was null
+				if (rs_forDB.wasNull())
+				{
+					CliValue = ""; // set it to empty string
+				}
+
 				String SiteName = rs_forDB.getString("SiteName");
+
+				// Check if it was null
+				if (rs_forDB.wasNull())
+				{
+					SiteName = ""; // set it to empty string
+				}
 
 				// Insert Values in Database
 				s_dbs.insertValuesInTable("Test_ClosedOutages_AffectedCLIs",
