@@ -36,7 +36,7 @@ public class ProductOfSubmission
 	}
 
 	public ProductOfSubmission(String requestID, String outageID, String incidentID, String voiceCustomersAffected,
-			String dataCustomersAffected, String CLIsAffected, String locationsAffected,
+			String dataCustomersAffected, String IPTVCustomersAffected, String CLIsAffected, String locationsAffected,
 			String incidentVoiceCustomersAffected, String incidentDataCustomersAffected, String statusCode,
 			String serviceAffected, String hierarchySelected, String description)
 	{
@@ -59,7 +59,7 @@ public class ProductOfSubmission
 		this.hierarchySelected = hierarchySelected;
 
 		this.activeDataCustomersAffected = "0";
-		this.tvCustomersAffected = "0";
+		this.tvCustomersAffected = IPTVCustomersAffected;
 	}
 
 	@XmlElement(name = "requestID")

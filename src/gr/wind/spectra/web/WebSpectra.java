@@ -469,6 +469,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Calculate Total number per Indicent, of customers affected per incident
 			int incidentDataCustomersAffected = 0;
 			int incidentVoiceCustomersAffected = 0;
+			int incidentIPTVCustomersAffected = 0;
 			for (String service : servicesAffected)
 			{
 				for (int i = 0; i < myHier.size(); i++)
@@ -502,6 +503,10 @@ public class WebSpectra implements InterfaceWebSpectra
 							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
+					String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+							"IPTVSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
@@ -512,6 +517,12 @@ public class WebSpectra implements InterfaceWebSpectra
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
+
+					String fullIPTVHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+							"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
+					String[] fullIPTVHierarchyPathSplit = fullIPTVHierarchyPath.split("->");
 
 					String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
@@ -528,6 +539,15 @@ public class WebSpectra implements InterfaceWebSpectra
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 
+					// Count distinct values of Usernames or CliVlaues in the respective columns
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
+
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -541,6 +561,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
+						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Voice_Resource_Path
 						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Voice_Resource_Path", "SiteName",
@@ -555,6 +576,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
+						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Internet_Resource_Path
 						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
@@ -570,6 +592,16 @@ public class WebSpectra implements InterfaceWebSpectra
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
+
+						// Get Unique Locations affected from Internet_Resource_Path
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("IPTV_Resource_Path", "SiteName",
+								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
+						locationsAffectedList.addAll(myList);
 					}
 
 					// Pick Unique values from locationsAffectedList
@@ -587,6 +619,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					incidentDataCustomersAffected += Integer.parseInt(dataCustomersAffected);
 					incidentVoiceCustomersAffected += Integer.parseInt(voiceCustomersAffected);
+					incidentIPTVCustomersAffected += Integer.parseInt(IPTVCustomersAffected);
 				}
 			}
 
@@ -614,6 +647,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			// opened same incident
 			String numberOfVoiceCustAffectedFromPreviousIncidents = "0";
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
+			String numberOfIPTVCustAffectedFromPreviousIncidents = "0";
 
 			if (wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents", new String[] { "IncidentID" },
 					new String[] { IncidentID }, new String[] { "String" }))
@@ -623,6 +657,9 @@ public class WebSpectra implements InterfaceWebSpectra
 						new String[] { IncidentID });
 				numberOfDataCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
 						"Test_SubmittedIncidents", "IncidentAffectedDataCustomers", new String[] { "IncidentID" },
+						new String[] { IncidentID });
+				numberOfIPTVCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
+						"Test_SubmittedIncidents", "IncidentAffectedIPTVCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
 
 			}
@@ -646,6 +683,10 @@ public class WebSpectra implements InterfaceWebSpectra
 							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
+					String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+							"IPTVSubscribersTableName", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
 					String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
@@ -656,6 +697,13 @@ public class WebSpectra implements InterfaceWebSpectra
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
+
+					String fullIPTVHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+							"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+							new String[] { rootHierarchySelected }, new String[] { "String" });
+
+					String[] fullIPTVHierarchyPathSplit = fullIPTVHierarchyPath.split("->");
+
 					String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
@@ -670,6 +718,14 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
 							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
@@ -692,14 +748,17 @@ public class WebSpectra implements InterfaceWebSpectra
 					if (service.equals("Voice"))
 					{
 						dataCustomersAffected = "0";
+						IPTVCustomersAffected = "0";
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
 						CLIsAffected = "0";
+						IPTVCustomersAffected = "0";
 					} else if (service.equals("IPTV"))
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
+						CLIsAffected = "0";
 					}
 
 					// Convert it to String (only for the sake of the below method
@@ -713,6 +772,8 @@ public class WebSpectra implements InterfaceWebSpectra
 							+ Integer.parseInt(numberOfVoiceCustAffectedFromPreviousIncidents);
 					int totalDataIncidentAffected = incidentDataCustomersAffected
 							+ Integer.parseInt(numberOfDataCustAffectedFromPreviousIncidents);
+					int totalIPTVIncidentAffected = incidentIPTVCustomersAffected
+							+ Integer.parseInt(numberOfIPTVCustAffectedFromPreviousIncidents);
 
 					// Concatenate locations with pipe
 					locationsAffected = String.join("|", uniqueLocationsSet);
@@ -727,17 +788,18 @@ public class WebSpectra implements InterfaceWebSpectra
 										"HierarchySelected", "Locations", "AffectedVoiceCustomers",
 										"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 										"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
-										"IncidentAffectedDataCustomers" },
+										"IncidentAffectedDataCustomers", "IncidentAffectedIPTVCustomers" },
 								new String[] { RequestID, Help_Func.now(), "Yes", OutageID_String, "OPEN",
 										RequestTimestamp, SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime,
 										Duration, service, Impact, Priority, myHier.get(i).toString(),
 										locationsAffected, voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
-										"0", "0", Integer.toString(totalVoiceIncidentAffected),
-										Integer.toString(totalDataIncidentAffected) },
+										"0", IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
+										Integer.toString(totalDataIncidentAffected),
+										Integer.toString(totalIPTVIncidentAffected) },
 								new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime",
 										"String", "String", "String", "String", "DateTime", "DateTime", "String",
 										"String", "String", "String", "String", "String", "Integer", "Integer",
-										"Integer", "Integer", "Integer", "Integer", "Integer" });
+										"Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
 					} catch (SQLException e)
 					{
 						throw new InvalidInputException("An Error occured during submission of data!", "Error 1500");
@@ -749,8 +811,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						locationsAffected = String.join(", ", uniqueLocationsSet);
 
 						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID_String, IncidentID,
-								voiceCustomersAffected, dataCustomersAffected, CLIsAffected, locationsAffected,
-								Integer.toString(totalVoiceIncidentAffected),
+								voiceCustomersAffected, dataCustomersAffected, IPTVCustomersAffected, CLIsAffected,
+								locationsAffected, Integer.toString(totalVoiceIncidentAffected),
 								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
 								"Submitted Successfully");
 						prodElementsList.add(ps);

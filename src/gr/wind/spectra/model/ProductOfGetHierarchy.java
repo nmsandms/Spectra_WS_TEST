@@ -87,6 +87,9 @@ public class ProductOfGetHierarchy
 				String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
+				String IPTVSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
+
 				// Calculate data Customers Affected but replace column names in order to
 				// search table for customers affected
 
@@ -124,9 +127,21 @@ public class ProductOfGetHierarchy
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
 				this.CLIsAffected = CLIsAffected;
 
+				// Calculate IPTV Customers Affected but replace column names in order to search table for
+				// customers affected
+				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullDataHierarchyPath)),
+						Help_Func.hierarchyValues(Help_Func
+								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullDataHierarchyPath)));
+
+				this.tvCustomersAffected = tvCustomersAffected;
+
 				// Calculate this
 				this.activeDataCustomersAffected = "0";
-				this.tvCustomersAffected = "0";
+				// this.tvCustomersAffected = "0";
 			}
 		}
 		// Ability To Export SQL Resultset to exported File
