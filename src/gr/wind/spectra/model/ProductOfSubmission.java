@@ -7,17 +7,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Element")
 @XmlType(name = "basicStruct2", propOrder = { "requestID", "outageID", "incidentID", "serviceAffected",
 		"hierarchySelected", "location", "voiceCustomersAffected", "dataCustomersAffected", "CLIsAffected",
-		"incidentVoiceCustomersAffected", "incidentDataCustomersAffected", "activeDataCustomersAffected",
-		"tvCustomersAffected", "statusCode", "description" })
+		"incidentVoiceCustomersAffected", "incidentDataCustomersAffected", "incidentTVCustomersAffected",
+		"activeDataCustomersAffected", "tvCustomersAffected", "statusCode", "description" })
 
 public class ProductOfSubmission
 {
-
 	private String requestID;
 	private String outageID;
 	private String incidentID;
 	private String voiceCustomersAffected;
 	private String dataCustomersAffected;
+	private String incidentTVCustomersAffected;
 	private String CLIsAffected;
 	private String incidentVoiceCustomersAffected;
 	private String incidentDataCustomersAffected;
@@ -37,8 +37,9 @@ public class ProductOfSubmission
 
 	public ProductOfSubmission(String requestID, String outageID, String incidentID, String voiceCustomersAffected,
 			String dataCustomersAffected, String IPTVCustomersAffected, String CLIsAffected, String locationsAffected,
-			String incidentVoiceCustomersAffected, String incidentDataCustomersAffected, String statusCode,
-			String serviceAffected, String hierarchySelected, String description)
+			String incidentVoiceCustomersAffected, String incidentDataCustomersAffected,
+			String incidentTVCustomersAffected, String statusCode, String serviceAffected, String hierarchySelected,
+			String description)
 	{
 		this.requestID = requestID;
 		this.incidentID = incidentID;
@@ -52,7 +53,7 @@ public class ProductOfSubmission
 		}
 		this.incidentVoiceCustomersAffected = incidentVoiceCustomersAffected;
 		this.incidentDataCustomersAffected = incidentDataCustomersAffected;
-
+		this.incidentTVCustomersAffected = incidentTVCustomersAffected;
 		this.statusCode = statusCode;
 		this.description = description;
 		this.serviceAffected = serviceAffected;
@@ -82,6 +83,17 @@ public class ProductOfSubmission
 	public void setactiveDataCustomersAffected(String activeDataCustomersAffected)
 	{
 		this.activeDataCustomersAffected = activeDataCustomersAffected;
+	}
+
+	@XmlElement(name = "IncidentTVCustomersAffected")
+	public String getIncidentTVCustomersAffected()
+	{
+		return incidentTVCustomersAffected;
+	}
+
+	public void setIncidentTVCustomersAffected(String incidentTVCustomersAffected)
+	{
+		this.incidentTVCustomersAffected = incidentTVCustomersAffected;
 	}
 
 	@XmlElement(name = "tvCustomersAffected")

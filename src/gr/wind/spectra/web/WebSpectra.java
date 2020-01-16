@@ -813,7 +813,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						ProductOfSubmission ps = new ProductOfSubmission(RequestID, OutageID_String, IncidentID,
 								voiceCustomersAffected, dataCustomersAffected, IPTVCustomersAffected, CLIsAffected,
 								locationsAffected, Integer.toString(totalVoiceIncidentAffected),
-								Integer.toString(totalDataIncidentAffected), "1", service, myHier.get(i).toString(),
+								Integer.toString(totalDataIncidentAffected),
+								Integer.toString(totalIPTVIncidentAffected), "1", service, myHier.get(i).toString(),
 								"Submitted Successfully");
 						prodElementsList.add(ps);
 
