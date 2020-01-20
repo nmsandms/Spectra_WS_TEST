@@ -106,7 +106,7 @@ public class ProductOfGetHierarchy
 				// Calculate Voice Customers Affected but replace column names in order to
 				// search table for customers affected
 				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-						new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
+						new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(

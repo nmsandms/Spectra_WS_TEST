@@ -549,7 +549,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
+							new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -728,7 +728,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-							new String[] { "ActiveElement", "Subrack", "Slot", "Port", "PON" },
+							new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
