@@ -531,7 +531,8 @@ public class WebSpectra implements InterfaceWebSpectra
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable,
+							"PASPORT_COID",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -540,7 +541,8 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable,
+							"PASPORT_COID",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -549,7 +551,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-							new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
+							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -711,7 +713,8 @@ public class WebSpectra implements InterfaceWebSpectra
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Count distinct values of Usernames or CliVlaues the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable,
+							"PASPORT_COID",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -719,7 +722,8 @@ public class WebSpectra implements InterfaceWebSpectra
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable,
+							"PASPORT_COID",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -728,7 +732,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 
 					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-							new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
+							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -736,13 +740,32 @@ public class WebSpectra implements InterfaceWebSpectra
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 
-					String CLIsAffected = wb.dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+					String CLIsAffected_1 = wb.dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+					String CLIsAffected_2 = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "CliValue",
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+					String CLIsAffected_3 = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "CliValue",
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+
+					int CLIsAffected_int = Integer.parseInt(CLIsAffected_1) + Integer.parseInt(CLIsAffected_2)
+							+ Integer.parseInt(CLIsAffected_3);
+
+					String CLIsAffected = String.valueOf(CLIsAffected_int);
 
 					// For Voice no data customers are affected and vice versa
 					if (service.equals("Voice"))

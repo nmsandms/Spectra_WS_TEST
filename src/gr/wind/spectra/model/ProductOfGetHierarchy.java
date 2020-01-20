@@ -93,7 +93,7 @@ public class ProductOfGetHierarchy
 				// Calculate data Customers Affected but replace column names in order to
 				// search table for customers affected
 
-				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "Username",
+				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "PASPORT_COID",
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func
@@ -106,7 +106,7 @@ public class ProductOfGetHierarchy
 				// Calculate Voice Customers Affected but replace column names in order to
 				// search table for customers affected
 				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
-						new String[] { "ActiveElement", "Subrack", "Slot", "Port" },
+						new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -118,18 +118,36 @@ public class ProductOfGetHierarchy
 
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
-				String CLIsAffected = dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+				String CLIsAffected_1 = dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)));
-				this.CLIsAffected = CLIsAffected;
+				String CLIsAffected_2 = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "CliValue",
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
+						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)));
+				String CLIsAffected_3 = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "CliValue",
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
+								fullVoiceHierarchyPath)),
+						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								this.hierarchyProvided, fullVoiceHierarchyPath)));
+
+				int CLIsAffected_int = Integer.parseInt(CLIsAffected_1) + Integer.parseInt(CLIsAffected_2)
+						+ Integer.parseInt(CLIsAffected_3);
+
+				this.CLIsAffected = String.valueOf(CLIsAffected_int);
 
 				// Calculate IPTV Customers Affected but replace column names in order to search table for
 				// customers affected
-				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "Username",
+				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "PASPORT_COID",
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func
