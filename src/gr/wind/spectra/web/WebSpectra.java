@@ -756,32 +756,16 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							ngaTypes);
 
-					String CLIsAffected_1 = wb.dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+					// Calculate CLIs Affected but replace column names in order to search table for
+					// customers affected
+					String CLIsAffected = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-					String CLIsAffected_2 = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "CliValue",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-					String CLIsAffected_3 = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "CliValue",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
-
-					int CLIsAffected_int = Integer.parseInt(CLIsAffected_1) + Integer.parseInt(CLIsAffected_2)
-							+ Integer.parseInt(CLIsAffected_3);
-
-					String CLIsAffected = String.valueOf(CLIsAffected_int);
+							ngaTypes);
 
 					// For Voice no data customers are affected and vice versa
 					if (service.equals("Voice"))
@@ -791,13 +775,11 @@ public class WebSpectra implements InterfaceWebSpectra
 					} else if (service.equals("Data"))
 					{
 						voiceCustomersAffected = "0";
-						CLIsAffected = "0";
 						IPTVCustomersAffected = "0";
 					} else if (service.equals("IPTV"))
 					{
 						dataCustomersAffected = "0";
 						voiceCustomersAffected = "0";
-						CLIsAffected = "0";
 					}
 
 					// Convert it to String (only for the sake of the below method

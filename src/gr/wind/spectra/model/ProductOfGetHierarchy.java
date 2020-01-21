@@ -122,32 +122,16 @@ public class ProductOfGetHierarchy
 
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
-				String CLIsAffected_1 = dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
+				String CLIsAffected = dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)));
-				String CLIsAffected_2 = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "CliValue",
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
-								fullVoiceHierarchyPath)),
-						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)));
-				String CLIsAffected_3 = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "CliValue",
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
-								fullVoiceHierarchyPath)),
-						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)));
+						ngaTypes);
 
-				int CLIsAffected_int = Integer.parseInt(CLIsAffected_1) + Integer.parseInt(CLIsAffected_2)
-						+ Integer.parseInt(CLIsAffected_3);
-
-				this.CLIsAffected = String.valueOf(CLIsAffected_int);
+				this.CLIsAffected = String.valueOf(CLIsAffected);
 
 				// Calculate IPTV Customers Affected but replace column names in order to search table for
 				// customers affected
