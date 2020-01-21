@@ -335,7 +335,7 @@ public class DB_Operations
 			String[] predicateValues, String[] predicateTypes, String ngaTypes) throws SQLException
 	{
 		String numOfRows = "";
-		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
+		String sqlQuery = "SELECT COUNT(*) AS Result FROM (SELECT DISTINCT ";
 
 		// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
 		String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
@@ -363,6 +363,7 @@ public class DB_Operations
 		}
 
 		logger.trace(sqlQuery);
+		System.out.println("366 : sqlQuery = " + sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -481,15 +482,20 @@ public class DB_Operations
 			String[] predicateTypes, String ngaTypes) throws SQLException
 	{
 
-		/*
-		 * SELECT COUNT(*) AS Result
-			FROM
+		/*	Example of Query that is implemented here
+		 *
+			SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 			(
-			SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path
-			UNION ALL
-			SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path
-			UNION ALL
-			SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path
+				SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
+		
+			    UNION ALL
+		
+			    SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
+		
+			    UNION ALL
+		
+			    SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
+		
 			) as AK;
 		
 		 */
@@ -531,23 +537,31 @@ public class DB_Operations
 		}
 
 		totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV + ") as AK";
-
 		logger.trace(totalQuery);
 		PreparedStatement pst = conn.prepareStatement(totalQuery);
 
-		// 3 iterations x number of predicates
-		for (int j = 0; j < 3; j++)
+		// 3 Queries iterations x number of predicates
+		int count = 0;
+		int totalQuestionMarks = predicateKeys.length * 3;
+		for (int i = 0; i < totalQuestionMarks; i++)
 		{
-			for (int i = 0; i < predicateKeys.length; i++)
+			for (int j = 0; j < predicateKeys.length; j++)
 			{
-				if (predicateTypes[i].equals("String"))
+				if (predicateTypes[j].equals("String"))
 				{
-					pst.setString(i + j + 1, predicateValues[i]);
-				} else if (predicateTypes[i].equals("Integer"))
+					int num = j + 1 + count;
+
+					if (num <= totalQuestionMarks)
+					{
+						pst.setString(j + 1 + count, predicateValues[j]);
+					}
+
+				} else if (predicateTypes[j].equals("Integer"))
 				{
-					pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+					pst.setInt(j + 1 + count, Integer.parseInt(predicateValues[j]));
 				}
 			}
+			count += predicateKeys.length;
 		}
 
 		pst.execute();
