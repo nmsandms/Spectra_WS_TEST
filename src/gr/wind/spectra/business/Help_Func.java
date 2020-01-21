@@ -13,7 +13,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -669,6 +668,25 @@ public class Help_Func
 		}
 	}
 
+	// "LLU,VDSL_LLU,VPU" --> "->NGA_TYPE=LLU->NGA_TYPE=VDSL_LLU->NGA_TYPE=VPU
+	public static String ngaTypesToSqlInFormat(String ngaTypes)
+	{
+		String output = "AND `NGA_TYPE` IN (";
+		String[] allNgaTypes = ngaTypes.split(",");
+
+		for (String ngaType : allNgaTypes)
+		{
+			output += "'" + ngaType + "',";
+		}
+
+		// Remove last comma character
+		output = output.substring(0, output.length() - 1);
+
+		output += ")";
+
+		return output;
+	}
+
 	public static String generateANDPredicateQuestionMarks(String predicateColumns[])
 	{
 		String output = "";
@@ -716,39 +734,6 @@ public class Help_Func
 	 * @param hierarchyGiven
 	 * @return
 	 */
-	public static String determineWSAffected(String hierarchyGiven)
-	{
-		String output = "";
-		Pattern.compile("^Cabinet_Code");
-		Pattern.compile("Wind_FTTX");
-		Pattern.compile("^FTTC_Location_Element");
-
-		boolean b1, b2, b3;
-		b1 = b2 = b3 = false;
-
-		if (hierarchyGiven.startsWith("Cabinet_Code"))
-		{
-			b1 = true;
-		}
-		if (hierarchyGiven.startsWith("Wind_FTTX"))
-		{
-			b2 = true;
-		}
-		if (hierarchyGiven.startsWith("FTTC_Location_Element"))
-		{
-			b3 = true;
-		}
-
-		if (b1 || b2 || b3)
-		{
-			output = "Yes";
-		} else
-		{
-			output = "No";
-		}
-
-		return output;
-	}
 
 	public static String declineSubmissionOnCertainHierarchyLevels(List<String> hierarchiesSubmitted)
 			throws InvalidInputException
@@ -809,9 +794,8 @@ public class Help_Func
 
 	public static void main(String[] args) throws InvalidInputException
 	{
-		ArrayList<String> myList = new ArrayList<String>();
-		myList.add("FTTC_Location_Element->SiteName=AKADIMIAS");
-		Help_Func.declineSubmissionOnCertainHierarchyLevels(myList);
+		// "LLU,VDSL_LLU,VPU" --> "->NGA_TYPE=LLU->NGA_TYPE=VDSL_LLU->NGA_TYPE=VPU
+
 	}
 
 	// public static void main(String[] args)

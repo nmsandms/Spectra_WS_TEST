@@ -253,7 +253,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 							fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 							fullHierarchyFromDBSplit[0], ElementsList, nodeNames, nodeValues, RequestID,
-							Help_Func.determineWSAffected(Hierarchy));
+							wb.dbs.determineWSAffected(Hierarchy));
 					prodElementsList.add(pr);
 				} else
 				{
@@ -290,7 +290,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames,
-								nodeValues, RequestID, Help_Func.determineWSAffected(Hierarchy));
+								nodeValues, RequestID, wb.dbs.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					} else
 					{ // Max Hierarchy Level
@@ -315,7 +315,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								"MaxLevel", ElementsList, nodeNames, nodeValues, RequestID,
-								Help_Func.determineWSAffected(Hierarchy));
+								wb.dbs.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					}
 				}
@@ -530,34 +530,42 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
-					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable,
-							"PASPORT_COID",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
+					// Secondly determine NGA_TYPE based on rootElement
+					String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable,
-							"PASPORT_COID",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
-
-					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
+					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							ngaTypes);
+
+					// Count distinct values of Usernames or CliVlaues in the respective columns
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
+							new String[] { "PASPORT_COID" },
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							ngaTypes);
+
+					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(
+							voiceSubsTable, new String[] { "PASPORT_COID" },
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							ngaTypes);
 
 					// For Voice no data customers are affected and vice versa
 					if (service.equals("Voice"))
@@ -712,33 +720,41 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
+					// Secondly determine NGA_TYPE based on rootElement
+					String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
+
 					// Count distinct values of Usernames or CliVlaues the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(dataSubsTable,
-							"PASPORT_COID",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)));
-
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable,
-							"PASPORT_COID",
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
-
-					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
+					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							ngaTypes);
+
+					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
+							new String[] { "PASPORT_COID" },
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							ngaTypes);
+
+					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(
+							voiceSubsTable, new String[] { "PASPORT_COID" },
+							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
+									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							ngaTypes);
 
 					String CLIsAffected_1 = wb.dbs.countDistinctRowsForSpecificColumn(voiceSubsTable, "CliValue",
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(

@@ -308,6 +308,7 @@ public class DB_Operations
 		String numOfRows = "";
 		String sqlQuery = "SELECT COUNT(DISTINCT(" + column + ")) as " + column + " FROM " + table + " WHERE "
 				+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+
 		logger.trace(sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
@@ -340,6 +341,108 @@ public class DB_Operations
 	 * 'ATHOACHRNAGW01' AND Subrack = '2' AND Slot = '04' ) as AK;
 	 *
 	 */
+
+	public String countDistinctRowsForSpecificColumnsNGAIncluded(String table, String[] columns, String[] predicateKeys,
+			String[] predicateValues, String[] predicateTypes, String ngaTypes) throws SQLException
+	{
+		String numOfRows = "";
+		String sqlQuery = "SELECT COUNT(*) AS Result FROM(SELECT DISTINCT ";
+
+		// Add Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
+		String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+
+		for (int i = 0; i < columns.length; i++)
+		{
+			if (i < columns.length - 1)
+			{
+				sqlQuery += columns[i] + ",";
+			} else
+			{
+				sqlQuery += columns[i];
+			}
+		}
+
+		// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
+		if (ngaTypes.equals("ALL"))
+		{
+			sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys)
+					+ ") as AK ";
+		} else
+		{
+			sqlQuery += " FROM " + table + " WHERE " + Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " "
+					+ ngaTypesToSQLPredicate + ") as AK ";
+		}
+
+		logger.trace(sqlQuery);
+		PreparedStatement pst = conn.prepareStatement(sqlQuery);
+
+		for (int i = 0; i < predicateKeys.length; i++)
+		{
+			if (predicateTypes[i].equals("String"))
+			{
+				pst.setString(i + 1, predicateValues[i]);
+			} else if (predicateTypes[i].equals("Integer"))
+			{
+				pst.setInt(i + 1, Integer.parseInt(predicateValues[i]));
+			}
+		}
+
+		pst.execute();
+		ResultSet rs = pst.executeQuery();
+
+		while (rs.next())
+		{
+			numOfRows = rs.getString("Result");
+		}
+
+		return numOfRows;
+	}
+
+	public String determineWSAffected(String hierarchyGiven) throws SQLException
+	{
+		/*
+		String output = "";
+		Pattern.compile("^Cabinet_Code");
+		Pattern.compile("Wind_FTTX");
+		Pattern.compile("^FTTC_Location_Element");
+
+		boolean b1, b2, b3;
+		b1 = b2 = b3 = false;
+
+		if (hierarchyGiven.startsWith("Cabinet_Code"))
+		{
+			b1 = true;
+		}
+		if (hierarchyGiven.startsWith("Wind_FTTX"))
+		{
+			b2 = true;
+		}
+		if (hierarchyGiven.startsWith("FTTC_Location_Element"))
+		{
+			b3 = true;
+		}
+
+		if (b1 || b2 || b3)
+		{
+			output = "Yes";
+		} else
+		{
+			output = "No";
+		}
+
+		return output;
+		*/
+
+		// Get root hierarchy String
+		String rootElementInHierarchy = Help_Func.getRootHierarchyNode(hierarchyGiven);
+
+		// Based on root hierarchy get value of WsAffected column
+		String wsAffectedValue = getOneValue("HierarchyTablePerTechnology2", "WsAffected",
+				new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
+				new String[] { "String" });
+
+		return wsAffectedValue;
+	}
 
 	public String countDistinctRowsForSpecificColumns(String table, String[] columns, String[] predicateKeys,
 			String[] predicateValues, String[] predicateTypes) throws SQLException

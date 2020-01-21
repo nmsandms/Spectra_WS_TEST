@@ -1,7 +1,6 @@
 package gr.wind.spectra.model;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -64,8 +63,6 @@ public class ProductOfGetHierarchy
 			this.type = "MaxLevel";
 		}
 
-		System.out.println("hierarchyFullPathList = " + Arrays.toString(hierarchyFullPathList));
-
 		// If hierarchyProvided is null then return only values provided
 		if (this.hierarchyProvided == null || this.hierarchyProvided.equals("") || this.hierarchyProvided.equals("?"))
 		{
@@ -90,29 +87,36 @@ public class ProductOfGetHierarchy
 				String IPTVSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
 
+				// Secondly determine NGA_TYPE based on rootElement
+				String ngaTypes = dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+						new String[] { "RootHierarchyNode" }, new String[] { rootElement }, new String[] { "String" });
+
 				// Calculate data Customers Affected but replace column names in order to
 				// search table for customers affected
 
-				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumn(dataSubsTable, "PASPORT_COID",
+				String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
+						new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func
 								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullDataHierarchyPath)));
+						Help_Func.hierarchyStringTypes(Help_Func
+								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						ngaTypes);
 
 				this.dataCustomersAffected = dataCustomersAffected;
 
 				// Calculate Voice Customers Affected but replace column names in order to
 				// search table for customers affected
-				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumns(voiceSubsTable,
+				String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
 						new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullVoiceHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
 								this.hierarchyProvided, fullVoiceHierarchyPath)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullVoiceHierarchyPath)));
+								this.hierarchyProvided, fullVoiceHierarchyPath)),
+						ngaTypes);
 
 				this.voiceCustomersAffected = voiceCustomersAffected;
 
@@ -147,13 +151,15 @@ public class ProductOfGetHierarchy
 
 				// Calculate IPTV Customers Affected but replace column names in order to search table for
 				// customers affected
-				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumn(IPTVSubsTable, "PASPORT_COID",
+				String tvCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
+						new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(this.hierarchyProvided,
 								fullDataHierarchyPath)),
 						Help_Func.hierarchyValues(Help_Func
 								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								this.hierarchyProvided, fullDataHierarchyPath)));
+						Help_Func.hierarchyStringTypes(Help_Func
+								.replaceHierarchyForSubscribersAffected(this.hierarchyProvided, fullDataHierarchyPath)),
+						ngaTypes);
 
 				this.tvCustomersAffected = tvCustomersAffected;
 
