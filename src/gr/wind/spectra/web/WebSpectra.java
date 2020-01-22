@@ -765,7 +765,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							ngaTypes);
+							ngaTypes, AffectedServices);
 
 					// For Voice no data customers are affected and vice versa
 					if (service.equals("Voice"))

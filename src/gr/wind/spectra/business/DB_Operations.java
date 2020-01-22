@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //Import log4j classes.
@@ -395,10 +396,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-
+		
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-
+		
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 			b1 = true;
@@ -411,7 +412,7 @@ public class DB_Operations
 		{
 			b3 = true;
 		}
-
+		
 		if (b1 || b2 || b3)
 		{
 			output = "Yes";
@@ -419,7 +420,7 @@ public class DB_Operations
 		{
 			output = "No";
 		}
-
+		
 		return output;
 		*/
 
@@ -479,101 +480,225 @@ public class DB_Operations
 	}
 
 	public String countDistinctCLIsAffected(String[] distinctColumns, String[] predicateKeys, String[] predicateValues,
-			String[] predicateTypes, String ngaTypes) throws SQLException
+			String[] predicateTypes, String ngaTypes, String serviceType) throws SQLException
 	{
-
 		/*	Example of Query that is implemented here
 		 *
 			SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 			(
 				SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 			    UNION ALL
-
+		
 			    SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 			    UNION ALL
-
+		
 			    SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-
+		
 			) as AK;
-
+		
 		 */
 
-		String sqlQueryForVoice = "";
-		String sqlQueryForData = "";
-		String sqlQueryForIPTV = "";
-
-		// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
-		String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
-		String totalQuery = "SELECT COUNT(DISTINCT " + String.join(", ", distinctColumns) + ") AS Result FROM (";
-		// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
-		if (ngaTypes.equals("ALL"))
+		if (serviceType.equals("NotSpecificService"))
 		{
-			sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_Voice_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+			String sqlQueryForVoice = "";
+			String sqlQueryForData = "";
+			String sqlQueryForIPTV = "";
 
-			sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_Internet_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+			// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
+			String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+			String totalQuery = "SELECT COUNT(DISTINCT " + String.join(", ", distinctColumns) + ") AS Result FROM (";
+			// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
+			if (ngaTypes.equals("ALL"))
+			{
+				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
-			sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_IPTV_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+
+				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+			} else
+			{
+				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+
+				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+
+				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+			}
+
+			totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV
+					+ ") as AK";
+			logger.trace(totalQuery);
+			PreparedStatement pst = conn.prepareStatement(totalQuery);
+
+			// 3 Queries iterations x number of predicates
+			int count = 0;
+			int totalQuestionMarks = predicateKeys.length * 3;
+			for (int i = 0; i < totalQuestionMarks; i++)
+			{
+				for (int j = 0; j < predicateKeys.length; j++)
+				{
+					if (predicateTypes[j].equals("String"))
+					{
+						int num = j + 1 + count;
+
+						if (num <= totalQuestionMarks)
+						{
+							pst.setString(j + 1 + count, predicateValues[j]);
+						}
+
+					} else if (predicateTypes[j].equals("Integer"))
+					{
+						pst.setInt(j + 1 + count, Integer.parseInt(predicateValues[j]));
+					}
+				}
+				count += predicateKeys.length;
+			}
+
+			pst.execute();
+			ResultSet rs = pst.executeQuery();
+			String numOfRows = "0";
+
+			while (rs.next())
+			{
+				numOfRows = rs.getString("Result");
+			}
+
+			return numOfRows;
 		} else
 		{
-			sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_Voice_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+			// Services affected
+			String[] servicesAffected = serviceType.split("\\|");
 
-			sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_Internet_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+			int numOfServicesAffected = servicesAffected.length;
 
-			sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-					+ ") from Prov_IPTV_Resource_Path WHERE "
-					+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
-		}
+			boolean voiceServiceAffection = false;
+			boolean dataServiceAffection = false;
+			boolean iptvServiceAffection = false;
 
-		totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV + ") as AK";
-		logger.trace(totalQuery);
-		PreparedStatement pst = conn.prepareStatement(totalQuery);
-
-		// 3 Queries iterations x number of predicates
-		int count = 0;
-		int totalQuestionMarks = predicateKeys.length * 3;
-		for (int i = 0; i < totalQuestionMarks; i++)
-		{
-			for (int j = 0; j < predicateKeys.length; j++)
+			if (Arrays.asList(servicesAffected).contains("Voice"))
 			{
-				if (predicateTypes[j].equals("String"))
-				{
-					int num = j + 1 + count;
-
-					if (num <= totalQuestionMarks)
-					{
-						pst.setString(j + 1 + count, predicateValues[j]);
-					}
-
-				} else if (predicateTypes[j].equals("Integer"))
-				{
-					pst.setInt(j + 1 + count, Integer.parseInt(predicateValues[j]));
-				}
+				voiceServiceAffection = true;
 			}
-			count += predicateKeys.length;
+			if (Arrays.asList(servicesAffected).contains("Data"))
+			{
+				dataServiceAffection = true;
+			}
+			if (Arrays.asList(servicesAffected).contains("IPTV"))
+			{
+				iptvServiceAffection = true;
+			}
+
+			String sqlQueryForVoice = "";
+			String sqlQueryForData = "";
+			String sqlQueryForIPTV = "";
+
+			// Convert NGA_TYPES to --> AND NGA_TYPE IN ('1', '2', '3')
+			String ngaTypesToSQLPredicate = Help_Func.ngaTypesToSqlInFormat(ngaTypes);
+			String totalQuery = "SELECT COUNT(DISTINCT " + String.join(", ", distinctColumns) + ") AS Result FROM (";
+			// If NgaPredicate is ALL then dont's set [ ngapredicate IN ('value1', 'value2', 'value3',) ]
+			if (ngaTypes.equals("ALL"))
+			{
+				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+
+				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+
+				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
+			} else
+			{
+				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+
+				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+
+				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
+						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
+			}
+
+			if (voiceServiceAffection)
+			{
+				totalQuery += sqlQueryForVoice + " UNION ALL ";
+			}
+			if (dataServiceAffection)
+			{
+				totalQuery += sqlQueryForData + " UNION ALL ";
+			}
+			if (iptvServiceAffection)
+			{
+				totalQuery += sqlQueryForIPTV + " UNION ALL ";
+			}
+
+			//totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV + ") as AK";
+
+			// Remove last " UNION ALL "
+			totalQuery = totalQuery.substring(0, totalQuery.length() - 11);
+
+			// Add ") as AK" to close the query
+			totalQuery += ") as AK";
+
+			logger.trace(totalQuery);
+			PreparedStatement pst = conn.prepareStatement(totalQuery);
+
+			// X Queries iterations x number of predicates
+			int count = 0;
+
+			int totalQuestionMarks = predicateKeys.length * numOfServicesAffected;
+
+			for (int i = 0; i < totalQuestionMarks; i++)
+			{
+				for (int j = 0; j < predicateKeys.length; j++)
+				{
+					if (predicateTypes[j].equals("String"))
+					{
+						int num = j + 1 + count;
+
+						if (num <= totalQuestionMarks)
+						{
+							pst.setString(j + 1 + count, predicateValues[j]);
+						}
+
+					} else if (predicateTypes[j].equals("Integer"))
+					{
+						pst.setInt(j + 1 + count, Integer.parseInt(predicateValues[j]));
+					}
+				}
+				count += predicateKeys.length;
+			}
+
+			pst.execute();
+			ResultSet rs = pst.executeQuery();
+			String numOfRows = "0";
+
+			while (rs.next())
+			{
+				numOfRows = rs.getString("Result");
+			}
+
+			return numOfRows;
 		}
 
-		pst.execute();
-		ResultSet rs = pst.executeQuery();
-		String numOfRows = "0";
-
-		while (rs.next())
-		{
-			numOfRows = rs.getString("Result");
-		}
-
-		return numOfRows;
 	}
 
 	public ResultSet getRows(String table, String[] columnNames, String[] predicateKeys, String[] predicateValues,
