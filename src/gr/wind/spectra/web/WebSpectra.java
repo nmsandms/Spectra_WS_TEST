@@ -706,7 +706,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							ngaTypes, AffectedServices);
+							ngaTypes, service);
 					CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 				}
 			}
