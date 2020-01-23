@@ -165,10 +165,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
 			{
-				// ElementsList =
-				// wb.dbs.GetOneColumnUniqueResultSet("HierarchyTablePerTechnology2",
-				// "RootHierarchyNode",
-				// "1 = 1");
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Get Hierarchy: Hierarchy Requested: <empty>");
 
