@@ -364,7 +364,7 @@ public class DB_Operations
 		}
 
 		logger.trace(sqlQuery);
-		System.out.println("366 : sqlQuery = " + sqlQuery);
+		// System.out.println("366 : sqlQuery = " + sqlQuery);
 		PreparedStatement pst = conn.prepareStatement(sqlQuery);
 
 		for (int i = 0; i < predicateKeys.length; i++)
@@ -396,10 +396,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-		
+
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-		
+
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 			b1 = true;
@@ -412,7 +412,7 @@ public class DB_Operations
 		{
 			b3 = true;
 		}
-		
+
 		if (b1 || b2 || b3)
 		{
 			output = "Yes";
@@ -420,7 +420,7 @@ public class DB_Operations
 		{
 			output = "No";
 		}
-		
+
 		return output;
 		*/
 
@@ -487,17 +487,17 @@ public class DB_Operations
 			SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 			(
 				SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			) as AK;
-		
+
 		 */
 
 		if (serviceType.equals("NotSpecificService"))
@@ -540,6 +540,8 @@ public class DB_Operations
 
 			totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV
 					+ ") as AK";
+
+			System.out.println("544: SqlQuery: " + totalQuery);
 			logger.trace(totalQuery);
 			PreparedStatement pst = conn.prepareStatement(totalQuery);
 
@@ -588,15 +590,15 @@ public class DB_Operations
 			boolean dataServiceAffection = false;
 			boolean iptvServiceAffection = false;
 
-			if (Arrays.asList(servicesAffected).contains("Voice"))
+			if ((Arrays.stream(servicesAffected).anyMatch("Voice"::equals)))
 			{
 				voiceServiceAffection = true;
 			}
-			if (Arrays.asList(servicesAffected).contains("Data"))
+			if ((Arrays.stream(servicesAffected).anyMatch("Data"::equals)))
 			{
 				dataServiceAffection = true;
 			}
-			if (Arrays.asList(servicesAffected).contains("IPTV"))
+			if ((Arrays.stream(servicesAffected).anyMatch("IPTV"::equals)))
 			{
 				iptvServiceAffection = true;
 			}
@@ -650,7 +652,7 @@ public class DB_Operations
 				totalQuery += sqlQueryForIPTV + " UNION ALL ";
 			}
 
-			//totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV + ") as AK";
+			// totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV;
 
 			// Remove last " UNION ALL "
 			totalQuery = totalQuery.substring(0, totalQuery.length() - 11);
@@ -659,6 +661,7 @@ public class DB_Operations
 			totalQuery += ") as AK";
 
 			logger.trace(totalQuery);
+			System.out.println("544: SqlQuery: " + totalQuery);
 			PreparedStatement pst = conn.prepareStatement(totalQuery);
 
 			// X Queries iterations x number of predicates

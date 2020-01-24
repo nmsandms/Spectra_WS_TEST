@@ -673,39 +673,37 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Calculate Per Incident CLIsAffected
 			int CLIsAffectedPerIncident = 0;
 
-			for (String service : servicesAffected)
+			for (int i = 0; i < myHier.size(); i++)
 			{
-				for (int i = 0; i < myHier.size(); i++)
-				{
 
-					// Firstly determine the hierarchy table that will be used based on the root
-					// hierarchy provided
-					String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
+				// Firstly determine the hierarchy table that will be used based on the root
+				// hierarchy provided
+				String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
 
-					String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+				String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
+						new String[] { rootHierarchySelected }, new String[] { "String" });
 
-					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
+				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
-					// Secondly determine NGA_TYPE based on rootElement
-					String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
-							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
-							new String[] { "String" });
+				// Secondly determine NGA_TYPE based on rootElement
+				String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
 
-					// Calculate CLIs Affected but replace column names in order to search table for
-					// customers affected
-					String CLIsAffected_String = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							ngaTypes, service);
-					CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
-				}
+				// Calculate CLIs Affected but replace column names in order to search table for
+				// customers affected
+				String CLIsAffected_String = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
+						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
+								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
+								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+						ngaTypes, AffectedServices);
+				CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 			}
+
 			String CLIsAffected = String.valueOf(CLIsAffectedPerIncident);
 
 			for (String service : servicesAffected)
