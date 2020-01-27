@@ -570,7 +570,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Voice_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Voice_Resource_Path", "SiteName",
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_Voice_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -585,7 +585,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Internet_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Internet_Resource_Path", "SiteName",
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_Internet_Resource_Path",
+								"SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -600,7 +601,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						voiceCustomersAffected = "0";
 
 						// Get Unique Locations affected from Internet_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("IPTV_Resource_Path", "SiteName",
+						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_IPTV_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
