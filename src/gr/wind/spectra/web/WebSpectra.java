@@ -692,6 +692,19 @@ public class WebSpectra implements InterfaceWebSpectra
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
+				// Determine Tables for Data/Voice subscribers
+				String dataSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
+				String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
+				String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+						new String[] { "String" });
+
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
 				String CLIsAffected_String = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
@@ -701,7 +714,7 @@ public class WebSpectra implements InterfaceWebSpectra
 								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
 								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-						ngaTypes, AffectedServices);
+						ngaTypes, AffectedServices, voiceSubsTable, dataSubsTable, IPTVSubsTable);
 				CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 			}
 

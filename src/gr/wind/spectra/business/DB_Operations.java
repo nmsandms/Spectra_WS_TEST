@@ -396,10 +396,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-		
+
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-		
+
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 			b1 = true;
@@ -412,7 +412,7 @@ public class DB_Operations
 		{
 			b3 = true;
 		}
-		
+
 		if (b1 || b2 || b3)
 		{
 			output = "Yes";
@@ -420,7 +420,7 @@ public class DB_Operations
 		{
 			output = "No";
 		}
-		
+
 		return output;
 		*/
 
@@ -480,24 +480,25 @@ public class DB_Operations
 	}
 
 	public String countDistinctCLIsAffected(String[] distinctColumns, String[] predicateKeys, String[] predicateValues,
-			String[] predicateTypes, String ngaTypes, String serviceType) throws SQLException
+			String[] predicateTypes, String ngaTypes, String serviceType, String voiceSubsTable, String dataSubsTable,
+			String IPTVSubsTable) throws SQLException
 	{
 		/*	Example of Query that is implemented here
 		 *
 			SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 			(
 				SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			) as AK;
-		
+
 		 */
 
 		if (serviceType.equals("NotSpecificService"))
@@ -513,28 +514,28 @@ public class DB_Operations
 			if (ngaTypes.equals("ALL"))
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ ") from " + voiceSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ ") from " + dataSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ ") from " + IPTVSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 			} else
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ ") from " + voiceSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ ") from " + dataSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ ") from " + IPTVSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 			}
 
@@ -614,28 +615,28 @@ public class DB_Operations
 			if (ngaTypes.equals("ALL"))
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ ") from " + voiceSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ ") from " + dataSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ ") from " + IPTVSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys);
 			} else
 			{
 				sqlQueryForVoice = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Voice_Resource_Path WHERE "
+						+ ") from " + voiceSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 
 				sqlQueryForData = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_Internet_Resource_Path WHERE "
+						+ ") from " + dataSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 
 				sqlQueryForIPTV = "SELECT DISTINCT (" + String.join(", ", distinctColumns)
-						+ ") from Prov_IPTV_Resource_Path WHERE "
+						+ ") from " + IPTVSubsTable + " WHERE "
 						+ Help_Func.generateANDPredicateQuestionMarks(predicateKeys) + " " + ngaTypesToSQLPredicate;
 			}
 
