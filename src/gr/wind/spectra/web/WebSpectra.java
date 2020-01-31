@@ -318,16 +318,30 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return prodElementsList;
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("Get Hierarchy General Exception: ", "Error 10000");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("Get Hierarchy Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 
@@ -882,16 +896,30 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			return prodElementsList;
 
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("Submit Outage General Exception: ", "Error 10001");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("Submit Outage Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 	}
@@ -997,17 +1025,30 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			}
 			return prodElementsList;
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("Get Outage Status General Exception: ", "Error 10002");
 		} finally
 		{
-			logger.trace(
-					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("Get Outage Status Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 	}
@@ -1216,17 +1257,31 @@ public class WebSpectra implements InterfaceWebSpectra
 
 			// Return instance of class ProductOfModify
 			return pom;
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("Modify Outage General Exception: ", "Error 10003");
 		} finally
 		{
-			// Close DB Connection
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				// Close DB Connection
+				logger.trace(
+						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("Modify Outage Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 	}
@@ -1384,16 +1439,29 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return poca;
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("Close Outage General Exception: ", "Error 10005");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("Close Outage Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 	}
@@ -1453,16 +1521,29 @@ public class WebSpectra implements InterfaceWebSpectra
 			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+			throw new InvalidInputException("NLU ActiveGeneral Exception: ", "Error 10006");
 		} finally
 		{
-			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
-			if (wb.conObj != null)
+			try
 			{
-				wb.conObj.closeDBConnection();
-			}
-			if (wb.s_conObj != null)
+				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
+				if (wb.conObj != null)
+				{
+					wb.conObj.closeDBConnection();
+				}
+				if (wb.s_conObj != null)
+				{
+					wb.s_conObj.closeDBConnection();
+				}
+			} catch (Exception e)
 			{
-				wb.s_conObj.closeDBConnection();
+				System.out.println("NLU Active Finally block");
+				System.out.println(e.getMessage());
+				System.out.println(e.getStackTrace());
 			}
 		}
 		return ponla;
