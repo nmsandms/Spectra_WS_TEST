@@ -320,9 +320,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("Get Hierarchy General Exception: ", "Error 10000");
+			throw e;
 		} finally
 		{
 			try
@@ -339,9 +337,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("Get Hierarchy Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("Get Hierarchy Finally block");
 			}
 		}
 
@@ -895,12 +891,9 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			return prodElementsList;
-
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("Submit Outage General Exception: ", "Error 10001");
+			throw e;
 		} finally
 		{
 			try
@@ -917,9 +910,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("Submit Outage Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("Submit Outage Finally block");
 			}
 		}
 	}
@@ -1027,9 +1018,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return prodElementsList;
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("Get Outage Status General Exception: ", "Error 10002");
+			throw e;
 		} finally
 		{
 			try
@@ -1046,9 +1035,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("Get Outage Status Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("Get Outage Status Finally block");
 			}
 		}
 	}
@@ -1259,9 +1246,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return pom;
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("Modify Outage General Exception: ", "Error 10003");
+			throw e;
 		} finally
 		{
 			try
@@ -1279,9 +1264,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("Modify Outage Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("Modify Outage Finally block");
 			}
 		}
 	}
@@ -1441,9 +1424,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			return poca;
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("Close Outage General Exception: ", "Error 10005");
+			throw e;
 		} finally
 		{
 			try
@@ -1459,9 +1440,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("Close Outage Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("Close Outage Finally block");
 			}
 		}
 	}
@@ -1523,9 +1502,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		} catch (Exception e)
 		{
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-			throw new InvalidInputException("NLU ActiveGeneral Exception: ", "Error 10006");
+			throw e;
 		} finally
 		{
 			try
@@ -1541,12 +1518,9 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			} catch (Exception e)
 			{
-				System.out.println("NLU Active Finally block");
-				System.out.println(e.getMessage());
-				System.out.println(e.getStackTrace());
+				logger.info("NLU Active Finally block");
 			}
 		}
 		return ponla;
 	}
-
 }
