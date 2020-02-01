@@ -494,20 +494,10 @@ public class CLIOutage
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");
 
-				// Insert line in Really_Affected_Customers table (this line logs the call from end user that received a positive response
-				// And also logs details from the affected Incident
-				try
-				{
-					s_dbs.insertValuesInTable("Test_Really_Affected_Customers",
-							new String[] { "IncidentID", "AffectedService", "Scheduled", "CliValue" },
-							new String[] { foundIncidentID, allAffectedServices, foundScheduled, CLIProvided },
-							new String[] { "String", "String", "String", "String", "String" });
-				} catch (Exception e)
-				{
-					//throw new InvalidInputException("Cannot write to Test_Really_Affected_Customers table",
-					//		"Error 414");
-					throw e;
-				}
+				// Update asynchronously ReallyAffectedTable to count number of successful NLU requests per CLI
+				Update_ReallyAffectedTable uRat = new Update_ReallyAffectedTable(s_dbs, foundIncidentID,
+						allAffectedServices, foundScheduled, CLIProvided);
+				uRat.run();
 			}
 
 		} else
