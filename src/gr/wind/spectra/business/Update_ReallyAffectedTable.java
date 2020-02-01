@@ -30,14 +30,14 @@ public class Update_ReallyAffectedTable extends Thread
 		// Check if we have at least one OPEN incident
 		try
 		{
-			numOfTimesCliCalledForIncident = s_dbs.numberOfRowsFound("Test_Really_Affected_Customers",
+			numOfTimesCliCalledForIncident = s_dbs.numberOfRowsFound("Test_Stats_Pos_NLU_Requests",
 					new String[] { "IncidentID", "CliValue" }, new String[] { foundIncidentID, CLIProvided },
 					new String[] { "String", "String" });
 
 			// If CLI has not called again then insert line
 			if (numOfTimesCliCalledForIncident.equals("0"))
 			{
-				s_dbs.insertValuesInTable("Test_Really_Affected_Customers",
+				s_dbs.insertValuesInTable("Test_Stats_Pos_NLU_Requests",
 						new String[] { "IncidentID", "AffectedService", "Scheduled", "CliValue" },
 						new String[] { foundIncidentID, allAffectedServices, foundScheduled, CLIProvided },
 						new String[] { "String", "String", "String", "String", "String" });
@@ -46,7 +46,7 @@ public class Update_ReallyAffectedTable extends Thread
 			else
 			{
 				// Update value using LAST_INSERT_ID method of MySQL e.g. SET ModifyOutage = LAST_INSERT_ID(ModifyOutage+1)
-				s_dbs.updateValuesBasedOnLastInsertID("Test_Really_Affected_Customers", "TimesCalled",
+				s_dbs.updateValuesBasedOnLastInsertID("Test_Stats_Pos_NLU_Requests", "TimesCalled",
 						new String[] { "IncidentID", "CliValue" }, new String[] { foundIncidentID, CLIProvided },
 						new String[] { "String", "String" });
 

@@ -431,6 +431,9 @@ public class CLIOutage
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
 
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 					allAffectedServices = "Voice|Data|IPTV";
 				} else if (voiceAffected && dataAffected)
 				{
@@ -446,11 +449,17 @@ public class CLIOutage
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Voice");
 
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 					allAffectedServices = "Voice|IPTV";
 				} else if (dataAffected && iptvAffected)
 				{
 					// Update Statistics
 					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_Data");
+
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
 
 					allAffectedServices = "Data|IPTV";
 				} else if (voiceAffected)
@@ -467,6 +476,9 @@ public class CLIOutage
 					allAffectedServices = "Data";
 				} else if (iptvAffected)
 				{
+					// Update Statistics
+					s_dbs.updateUsageStatisticsForMethod("NLU_Active_Pos_IPTV");
+
 					allAffectedServices = "IPTV";
 				}
 
@@ -494,7 +506,7 @@ public class CLIOutage
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");
 
-				// Update asynchronously ReallyAffectedTable to count number of successful NLU requests per CLI
+				// Update asynchronously Test_Stats_Pos_NLU_Requests to count number of successful NLU requests per CLI
 				Update_ReallyAffectedTable uRat = new Update_ReallyAffectedTable(s_dbs, foundIncidentID,
 						allAffectedServices, foundScheduled, CLIProvided);
 				uRat.run();
