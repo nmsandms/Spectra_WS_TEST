@@ -212,7 +212,7 @@ public class CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -493,6 +493,21 @@ public class CLIOutage
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
 						"NULL");
+
+				// Insert line in Really_Affected_Customers table (this line logs the call from end user that received a positive response
+				// And also logs details from the affected Incident
+				try
+				{
+					s_dbs.insertValuesInTable("Test_Really_Affected_Customers",
+							new String[] { "IncidentID", "AffectedService", "Scheduled", "CliValue" },
+							new String[] { foundIncidentID, allAffectedServices, foundScheduled, CLIProvided },
+							new String[] { "String", "String", "String", "String", "String" });
+				} catch (Exception e)
+				{
+					//throw new InvalidInputException("Cannot write to Test_Really_Affected_Customers table",
+					//		"Error 414");
+					throw e;
+				}
 			}
 
 		} else
