@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import gr.wind.spectra.model.ProductOfNLUActive;
 import gr.wind.spectra.web.InvalidInputException;
 
-public class CLIOutage
+public class Test_CLIOutage
 {
 	private DB_Operations dbs;
 	private s_DB_Operations s_dbs;
@@ -26,9 +26,9 @@ public class CLIOutage
 	DateFormat dateFormat = new SimpleDateFormat(Help_Func.DATE_FORMAT);
 
 	// Logger instance
-	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.CLIOutage.class.getName());
+	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.Test_CLIOutage.class.getName());
 
-	public CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
+	public Test_CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
 	{
 		this.dbs = dbs;
 		this.s_dbs = s_dbs;

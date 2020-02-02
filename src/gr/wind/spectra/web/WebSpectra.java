@@ -23,7 +23,7 @@ import javax.xml.ws.handler.MessageContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gr.wind.spectra.business.CLIOutage;
+import gr.wind.spectra.business.Test_CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
@@ -1497,7 +1497,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			CLIOutage co = new CLIOutage(wb.dbs, wb.s_dbs, RequestID);
+			Test_CLIOutage co = new Test_CLIOutage(wb.dbs, wb.s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
 		} catch (Exception e)
