@@ -212,7 +212,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -514,6 +514,9 @@ public class Test_CLIOutage
 
 		} else
 		{
+			// Update Statistics
+			s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
+
 			logger.info(
 					"ReqID: " + RequestID + " - No Service affection for CLI: " + CLIProvided + " | " + ServiceType);
 			//throw new InvalidInputException("No service affection", "Info 425");
