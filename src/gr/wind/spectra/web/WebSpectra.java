@@ -23,11 +23,11 @@ import javax.xml.ws.handler.MessageContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gr.wind.spectra.business.Test_CLIOutage;
 import gr.wind.spectra.business.DB_Connection;
 import gr.wind.spectra.business.DB_Operations;
 import gr.wind.spectra.business.Help_Func;
 import gr.wind.spectra.business.IncidentOutageToCSV;
+import gr.wind.spectra.business.Test_CLIOutage;
 import gr.wind.spectra.business.s_DB_Connection;
 import gr.wind.spectra.business.s_DB_Operations;
 import gr.wind.spectra.model.ProductOfCloseOutage;
@@ -41,19 +41,28 @@ import gr.wind.spectra.model.ProductOfSubmission;
 public class WebSpectra implements InterfaceWebSpectra
 {
 	// Logger instance
+	/*
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 	private static final String hierSep = "->";
-
 	private Connection conn;
 	private DB_Connection conObj;
 	private DB_Operations dbs;
-
 	private Connection s_conn;
 	private s_DB_Connection s_conObj;
 	private s_DB_Operations s_dbs;
-
 	private HttpServletRequest req;
-
+	
+	Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+	String hierSep = "->";
+	Connection conn;
+	DB_Connection conObj;
+	DB_Operations dbs;
+	Connection s_conn;
+	s_DB_Connection s_conObj;
+	s_DB_Operations s_dbs;
+	HttpServletRequest req;
+	
+	*/
 	// Those directive is for IP retrieval of web request
 	@Resource
 	WebServiceContext wsContext;
@@ -66,15 +75,32 @@ public class WebSpectra implements InterfaceWebSpectra
 	@WebMethod(exclude = true)
 	public void establishDBConnection() throws Exception
 	{
-		//System.out.println("Client IP = " + req.getRemoteAddr());
-
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj;
 		if (conn == null)
 		{
 			try
 			{
-				this.conObj = new DB_Connection();
-				this.conn = this.conObj.connect();
-				this.dbs = new DB_Operations(conn);
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				new s_DB_Operations(s_conn);
 			} catch (Exception ex)
 			{
 				logger.fatal("Could not open connection with database!");
@@ -88,19 +114,6 @@ public class WebSpectra implements InterfaceWebSpectra
 	{
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 
-		if (s_conn == null)
-		{
-			try
-			{
-				this.s_conObj = new s_DB_Connection();
-				this.s_conn = this.s_conObj.connect();
-				this.s_dbs = new s_DB_Operations(s_conn);
-			} catch (Exception ex)
-			{
-				logger.fatal("Could not open connection with database!");
-				throw new Exception(ex.getMessage());
-			}
-		}
 	}
 
 	@Override
@@ -116,6 +129,45 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "Hierarchy") String Hierarchy) throws Exception, InvalidInputException
 	{
 
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		String hierSep = "->";
+		Connection conn = null;
+		DB_Connection conObj = null;
+		DB_Operations dbs = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
 		/*
 		 * <DataCustomersAffected>34</potentialCustomersAffected>// unique user names
 		 * from Data Resource path
@@ -124,15 +176,15 @@ public class WebSpectra implements InterfaceWebSpectra
 		 * unique CLIs from Voice Resource path
 		 */
 
-		WebSpectra wb = new WebSpectra();
+		new WebSpectra();
 		try
 		{
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			//establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Establishing DB Connection");
@@ -140,7 +192,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			List<ProductOfGetHierarchy> prodElementsList = new ArrayList<>();
 
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Hierarchy: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -160,7 +212,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("GetHierarchy");
+			s_dbs.updateUsageStatisticsForMethod("GetHierarchy");
 
 			// No Hierarchy is given - returns root elements
 			if (Hierarchy == null || Hierarchy.equals("") || Hierarchy.equals("?"))
@@ -168,12 +220,12 @@ public class WebSpectra implements InterfaceWebSpectra
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Get Hierarchy: Hierarchy Requested: <empty>");
 
-				ElementsList = wb.dbs.getOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
+				ElementsList = dbs.getOneColumnUniqueResultSet("HierarchyTablePerTechnology2", "RootHierarchyNode",
 						new String[] {}, new String[] {}, new String[] {});
 
 				String[] nodeNames = new String[] {};
 				String[] nodeValues = new String[] {};
-				ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, new String[] {}, new String[] {},
+				ProductOfGetHierarchy pr = new ProductOfGetHierarchy(dbs, new String[] {}, new String[] {},
 						new String[] {}, Hierarchy, "rootElements", ElementsList, nodeNames, nodeValues, RequestID,
 						"No");
 				prodElementsList.add(pr);
@@ -188,15 +240,15 @@ public class WebSpectra implements InterfaceWebSpectra
 				String rootElementInHierarchy = Help_Func.getRootHierarchyNode(Hierarchy);
 
 				// Get Hierarchy Table for that root hierarchy
-				String table = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
+				String table = dbs.getOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
 						new String[] { "String" });
 
 				// Get Hierarchy data in style :
 				// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-				String fullHierarchyFromDB = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-						"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
-						new String[] { rootElementInHierarchy }, new String[] { "String" });
+				String fullHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2", "HierarchyTableNamePath",
+						new String[] { "RootHierarchyNode" }, new String[] { rootElementInHierarchy },
+						new String[] { "String" });
 
 				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 				// hierarchy e.g. SiteNa7me=AKADIMIAS)
@@ -207,7 +259,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 				// Get Full Data hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
-				String fullDataSubsHierarchyFromDB = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+				String fullDataSubsHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2",
 						"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
@@ -216,7 +268,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 				// Get Full Voice hierarchy in style :
 				// OltElementName->OltSlot->OltPort->Onu->ActiveElement->Slot
-				String fullVoiceSubsHierarchyFromDB = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+				String fullVoiceSubsHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2",
 						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 						new String[] { rootElementInHierarchy }, new String[] { "String" });
 
@@ -237,19 +289,19 @@ public class WebSpectra implements InterfaceWebSpectra
 				// If only root Hierarchy is given
 				if (hierItemsGiven.length == 1)
 				{
-					// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+					// ElementsList = dbs.GetOneColumnUniqueResultSet(table,
 					// fullHierarchyFromDBSplit[0], " 1 = 1 ");
 
-					ElementsList = wb.dbs.getOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0],
-							new String[] {}, new String[] {}, new String[] {});
+					ElementsList = dbs.getOneColumnUniqueResultSet(table, fullHierarchyFromDBSplit[0], new String[] {},
+							new String[] {}, new String[] {});
 
 					String[] nodeNames = new String[] { rootElementInHierarchy };
 					String[] nodeValues = new String[] { "1" };
 
-					ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+					ProductOfGetHierarchy pr = new ProductOfGetHierarchy(dbs, fullHierarchyFromDBSplit,
 							fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 							fullHierarchyFromDBSplit[0], ElementsList, nodeNames, nodeValues, RequestID,
-							wb.dbs.determineWSAffected(Hierarchy));
+							dbs.determineWSAffected(Hierarchy));
 					prodElementsList.add(pr);
 				} else
 				{
@@ -273,20 +325,20 @@ public class WebSpectra implements InterfaceWebSpectra
 							nodeValuesArrayList.add(keyValue[1]);
 						}
 
-						// ElementsList = wb.dbs.GetOneColumnUniqueResultSet(table,
+						// ElementsList = dbs.GetOneColumnUniqueResultSet(table,
 						// fullHierarchyFromDBSplit[hierItemsGiven.length - 1],
 						// Help_Func.HierarchyToPredicate(Hierarchy));
 
-						ElementsList = wb.dbs.getOneColumnUniqueResultSet(table,
+						ElementsList = dbs.getOneColumnUniqueResultSet(table,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], Help_Func.hierarchyKeys(Hierarchy),
 								Help_Func.hierarchyValues(Hierarchy), Help_Func.hierarchyStringTypes(Hierarchy));
 
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], ElementsList, nodeNames,
-								nodeValues, RequestID, wb.dbs.determineWSAffected(Hierarchy));
+								nodeValues, RequestID, dbs.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					} else
 					{ // Max Hierarchy Level
@@ -308,10 +360,10 @@ public class WebSpectra implements InterfaceWebSpectra
 						ElementsList = new ArrayList<String>();
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
-						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(wb.dbs, fullHierarchyFromDBSplit,
+						ProductOfGetHierarchy pr = new ProductOfGetHierarchy(dbs, fullHierarchyFromDBSplit,
 								fullDataSubsHierarchyFromDBSplit, fullVoiceSubsHierarchyFromDBSplit, Hierarchy,
 								"MaxLevel", ElementsList, nodeNames, nodeValues, RequestID,
-								wb.dbs.determineWSAffected(Hierarchy));
+								dbs.determineWSAffected(Hierarchy));
 						prodElementsList.add(pr);
 					}
 				}
@@ -327,13 +379,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				logger.trace(
 						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Hierarchy: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
@@ -366,7 +418,46 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "HierarchySelected") @XmlElement(required = true) String HierarchySelected)
 			throws Exception, InvalidInputException
 	{
-		WebSpectra wb = new WebSpectra();
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj = null;
+		DB_Operations dbs = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		new WebSpectra();
 
 		// The below variabes are used for location determination - on a per Incident basis
 		String locationsAffected = null;
@@ -379,8 +470,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			//establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Establishing DB Connection");
@@ -389,7 +480,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			prodElementsList = new ArrayList<>();
 			int OutageID_Integer = 0;
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Submit Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -458,7 +549,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			List<String> myHier = Help_Func.getHierarchySelections(HierarchySelected);
 
 			// Get Max Outage ID (type int)
-			OutageID_Integer = wb.s_dbs.getMaxIntegerValue("Test_SubmittedIncidents", "OutageID");
+			OutageID_Integer = s_dbs.getMaxIntegerValue("Test_SubmittedIncidents", "OutageID");
 
 			// Services affected
 			String[] servicesAffected = AffectedServices.split("\\|");
@@ -470,7 +561,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.declineSubmissionOnCertainHierarchyLevels(myHier);
 
 			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("SubmitOutage");
+			s_dbs.updateUsageStatisticsForMethod("SubmitOutage");
 
 			// Calculate Total number per Indicent, of customers affected per incident
 			int incidentDataCustomersAffected = 0;
@@ -496,7 +587,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					// Get Hierarchy data in style :
 					// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
-					String fullHierarchyFromDB = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullHierarchyFromDB = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"HierarchyTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
@@ -505,44 +596,44 @@ public class WebSpectra implements InterfaceWebSpectra
 					Help_Func.checkColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
 
 					// Determine Tables for Data/Voice subscribers
-					String dataSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
-					String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"IPTVSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String IPTVSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
-					String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
-					String fullDataHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullDataHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 
-					String fullIPTVHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullIPTVHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullIPTVHierarchyPathSplit = fullIPTVHierarchyPath.split("->");
 
-					String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullVoiceHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Secondly determine NGA_TYPE based on rootElement
-					String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+					String ngaTypes = dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
 							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 							new String[] { "String" });
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
+					String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
@@ -553,7 +644,7 @@ public class WebSpectra implements InterfaceWebSpectra
 							ngaTypes);
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
+					String IPTVCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
@@ -563,8 +654,8 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 							ngaTypes);
 
-					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(
-							voiceSubsTable, new String[] { "PASPORT_COID" },
+					String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
+							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -580,7 +671,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Voice_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_Voice_Resource_Path", "SiteName",
+						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_Voice_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -595,8 +686,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						IPTVCustomersAffected = "0";
 
 						// Get Unique Locations affected from Internet_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_Internet_Resource_Path",
-								"SiteName",
+						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_Internet_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -611,7 +701,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						voiceCustomersAffected = "0";
 
 						// Get Unique Locations affected from Internet_Resource_Path
-						List<String> myList = wb.dbs.getOneColumnUniqueResultSet("Prov_IPTV_Resource_Path", "SiteName",
+						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_IPTV_Resource_Path", "SiteName",
 								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -646,7 +736,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
-					boolean incidentAlreadyExists = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+					boolean incidentAlreadyExists = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 							new String[] { "IncidentStatus", "IncidentID", "AffectedServices", "HierarchySelected" },
 							new String[] { "OPEN", IncidentID, service, myHier.get(i).toString() },
 							new String[] { "String", "String", "String", "String" });
@@ -666,16 +756,16 @@ public class WebSpectra implements InterfaceWebSpectra
 			String numberOfDataCustAffectedFromPreviousIncidents = "0";
 			String numberOfIPTVCustAffectedFromPreviousIncidents = "0";
 
-			if (wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents", new String[] { "IncidentID" },
+			if (s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents", new String[] { "IncidentID" },
 					new String[] { IncidentID }, new String[] { "String" }))
 			{
-				numberOfVoiceCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
+				numberOfVoiceCustAffectedFromPreviousIncidents = s_dbs.maxNumberOfCustomersAffected(
 						"Test_SubmittedIncidents", "IncidentAffectedVoiceCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
-				numberOfDataCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
+				numberOfDataCustAffectedFromPreviousIncidents = s_dbs.maxNumberOfCustomersAffected(
 						"Test_SubmittedIncidents", "IncidentAffectedDataCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
-				numberOfIPTVCustAffectedFromPreviousIncidents = wb.s_dbs.maxNumberOfCustomersAffected(
+				numberOfIPTVCustAffectedFromPreviousIncidents = s_dbs.maxNumberOfCustomersAffected(
 						"Test_SubmittedIncidents", "IncidentAffectedIPTVCustomers", new String[] { "IncidentID" },
 						new String[] { IncidentID });
 
@@ -691,33 +781,33 @@ public class WebSpectra implements InterfaceWebSpectra
 				// hierarchy provided
 				String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
 
-				String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+				String fullVoiceHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 						new String[] { rootHierarchySelected }, new String[] { "String" });
 
 				String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 				// Secondly determine NGA_TYPE based on rootElement
-				String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+				String ngaTypes = dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
 				// Determine Tables for Data/Voice subscribers
-				String dataSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+				String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
-				String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+				String IPTVSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
-				String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+				String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
 						new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 						new String[] { "String" });
 
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
-				String CLIsAffected_String = wb.dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
+				String CLIsAffected_String = dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
 						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -734,9 +824,6 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
-					// Add One
-					OutageID_Integer += 1;
-
 					// Check Hierarchy Format Key_Value Pairs
 					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
 
@@ -745,44 +832,44 @@ public class WebSpectra implements InterfaceWebSpectra
 					String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
 
 					// Determine Tables for Data/Voice subscribers
-					String dataSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"DataSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
-					String IPTVSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"IPTVSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String IPTVSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "IPTVSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
-					String voiceSubsTable = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
-							"VoiceSubscribersTableName", new String[] { "RootHierarchyNode" },
-							new String[] { rootHierarchySelected }, new String[] { "String" });
+					String voiceSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "VoiceSubscribersTableName",
+							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
+							new String[] { "String" });
 
 					// Get Hierarchies for Data/Voice Tables
-					String fullDataHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullDataHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"DataSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullDataHierarchyPathSplit = fullDataHierarchyPath.split("->");
 
-					String fullIPTVHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullIPTVHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"IPTVSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullIPTVHierarchyPathSplit = fullIPTVHierarchyPath.split("->");
 
-					String fullVoiceHierarchyPath = wb.dbs.getOneValue("HierarchyTablePerTechnology2",
+					String fullVoiceHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 							"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
 							new String[] { rootHierarchySelected }, new String[] { "String" });
 
 					String[] fullVoiceHierarchyPathSplit = fullVoiceHierarchyPath.split("->");
 
 					// Secondly determine NGA_TYPE based on rootElement
-					String ngaTypes = wb.dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
+					String ngaTypes = dbs.getOneValue("HierarchyTablePerTechnology2", "NGA_TYPE",
 							new String[] { "RootHierarchyNode" }, new String[] { rootHierarchySelected },
 							new String[] { "String" });
 
 					// Count distinct values of Usernames or CliVlaues the respective columns
-					String dataCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
+					String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
@@ -792,7 +879,7 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
 							ngaTypes);
 
-					String IPTVCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
+					String IPTVCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
 							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
@@ -802,8 +889,8 @@ public class WebSpectra implements InterfaceWebSpectra
 									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
 							ngaTypes);
 
-					String voiceCustomersAffected = wb.dbs.countDistinctRowsForSpecificColumnsNGAIncluded(
-							voiceSubsTable, new String[] { "PASPORT_COID" },
+					String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
+							new String[] { "PASPORT_COID" },
 							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
 									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
 							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
@@ -827,6 +914,12 @@ public class WebSpectra implements InterfaceWebSpectra
 						voiceCustomersAffected = "0";
 					}
 
+					// Get Max again
+					OutageID_Integer = s_dbs.getMaxIntegerValue("Test_SubmittedIncidents", "OutageID");
+
+					// Add One
+					OutageID_Integer += 1;
+
 					// Convert it to String (only for the sake of the below method
 					// (InsertValuesInTableGetSequence) - In the database it is still an integer
 					String OutageID_String = Integer.toString(OutageID_Integer);
@@ -847,7 +940,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Insert Values in Database
 					try
 					{
-						wb.s_dbs.insertValuesInTable("Test_SubmittedIncidents",
+						s_dbs.insertValuesInTable("Test_SubmittedIncidents",
 								new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
 										"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled",
 										"StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
@@ -900,13 +993,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				logger.trace(
 						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Submit Outage: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
@@ -926,7 +1019,44 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "IncidentStatus") @XmlElement(required = true) String IncidentStatus)
 			throws Exception, InvalidInputException
 	{
-		WebSpectra wb = new WebSpectra();
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		new WebSpectra();
 
 		try
 		{
@@ -934,8 +1064,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			//wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			////establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID
 					+ " - Get Outage Status: Establishing DB Connection");
@@ -947,7 +1077,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("IncidentStatus", IncidentStatus);
 
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Get Outage Status: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -956,20 +1086,20 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("GetOutageStatus");
+			s_dbs.updateUsageStatisticsForMethod("GetOutageStatus");
 
 			String numOfRows = "0";
 			ResultSet rs = null;
 			if (IncidentID.equals("*"))
 			{
 				// Number of rows that will be returned
-				// numOfRows = wb.dbs.NumberOfRowsFound("Test_SubmittedIncidents", "IncidentStatus =
+				// numOfRows = dbs.NumberOfRowsFound("Test_SubmittedIncidents", "IncidentStatus =
 				// '" + IncidentStatus + "'");
 
-				numOfRows = wb.s_dbs.numberOfRowsFound("Test_SubmittedIncidents", new String[] { "IncidentStatus" },
+				numOfRows = s_dbs.numberOfRowsFound("Test_SubmittedIncidents", new String[] { "IncidentStatus" },
 						new String[] { IncidentStatus }, new String[] { "String" });
 
-				rs = wb.s_dbs.getRows("Test_SubmittedIncidents",
+				rs = s_dbs.getRows("Test_SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
@@ -979,11 +1109,11 @@ public class WebSpectra implements InterfaceWebSpectra
 						new String[] { "IncidentStatus" }, new String[] { IncidentStatus }, new String[] { "String" });
 			} else
 			{
-				numOfRows = wb.s_dbs.numberOfRowsFound("Test_SubmittedIncidents",
+				numOfRows = s_dbs.numberOfRowsFound("Test_SubmittedIncidents",
 						new String[] { "IncidentID", "IncidentStatus" }, new String[] { IncidentID, IncidentStatus },
 						new String[] { "String", "String" });
 
-				rs = wb.s_dbs.getRows("Test_SubmittedIncidents",
+				rs = s_dbs.getRows("Test_SubmittedIncidents",
 						new String[] { "OutageID", "IncidentStatus", "RequestTimestamp", "SystemID", "UserID",
 								"IncidentID", "Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices",
 								"Impact", "Priority", "Hierarchyselected", "AffectedVoiceCustomers",
@@ -1025,13 +1155,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				logger.trace(
 						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Get Outage Status: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
@@ -1058,7 +1188,45 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "Impact") @XmlElement(required = false) String Impact)
 			throws Exception, InvalidInputException
 	{
-		WebSpectra wb = new WebSpectra();
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		new WebSpectra();
 
 		try
 		{
@@ -1066,13 +1234,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			//wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			////establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "Modify Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1081,7 +1249,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("ModifyOutage");
+			s_dbs.updateUsageStatisticsForMethod("ModifyOutage");
 
 			ProductOfModify pom = null;
 
@@ -1122,7 +1290,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if the combination of IncidentID & OutageID exists
-			boolean incidentPlusOutageExists = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+			boolean incidentPlusOutageExists = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 					new String[] { "String", "String" });
 
@@ -1130,7 +1298,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			{
 				// Check if the combination of IncidentID & OutageID refers to a scheduled
 				// Incident (Scheduled = "Yes")
-				boolean incidentIsScheduled = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+				boolean incidentIsScheduled = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 						new String[] { "IncidentID", "OutageID", "Scheduled" },
 						new String[] { IncidentID, OutageID, "Yes" }, new String[] { "String", "String", "String" });
 				// Create a new list with the updated columns - based on what is empty or not
@@ -1200,7 +1368,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 
 				// Check if Incident is still open
-				boolean isIncidentClosed = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+				boolean isIncidentClosed = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 						new String[] { "IncidentStatus", "IncidentID", "OutageID" },
 						new String[] { "CLOSED", IncidentID, OutageID }, new String[] { "String", "String", "String" });
 
@@ -1216,7 +1384,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				int numOfRowsUpdated = 0;
 				try
 				{
-					numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+					numOfRowsUpdated = s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
 							arrayOfColumnsForUpdate, arrayOfValuesForUpdate, arrayOfDataTypesForUpdate,
 							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 							new String[] { "String", "Integer" });
@@ -1254,13 +1422,13 @@ public class WebSpectra implements InterfaceWebSpectra
 				// Close DB Connection
 				logger.trace(
 						req.getRemoteAddr() + " - ReqID: " + RequestID + " - Modify Outage: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
@@ -1282,7 +1450,46 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID)
 			throws Exception, InvalidInputException
 	{
-		WebSpectra wb = new WebSpectra();
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj = null;
+		DB_Operations dbs = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		new WebSpectra();
 		int numOfRowsUpdated = 0;
 		try
 		{
@@ -1290,13 +1497,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			//establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(
 					req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Establishing DB Connection");
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ " - Close Outage: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1305,7 +1512,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Update Statistics
-			wb.s_dbs.updateUsageStatisticsForMethod("CloseOutage");
+			s_dbs.updateUsageStatisticsForMethod("CloseOutage");
 
 			ProductOfCloseOutage poca = null;
 
@@ -1319,7 +1526,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func.validateNotEmpty("OutageID", OutageID);
 
 			// Check if the combination of IncidentID & OutageID exists
-			boolean incidentPlusOutageExists = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+			boolean incidentPlusOutageExists = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 					new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 					new String[] { "String", "String" });
 
@@ -1329,7 +1536,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ " OutageID: " + OutageID);
 
 				// Check if the combination of IncidentID & OutageID is still OPEN
-				boolean incidentPlusOutageIsOpen = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+				boolean incidentPlusOutageIsOpen = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 						new String[] { "IncidentID", "OutageID", "IncidentStatus" },
 						new String[] { IncidentID, OutageID, "OPEN" }, new String[] { "String", "String", "String" });
 
@@ -1337,7 +1544,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				if (incidentPlusOutageIsOpen)
 				{
 					// Check if the Incidents is Scheduled
-					boolean incidentIsScheduled = wb.s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
+					boolean incidentIsScheduled = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
 							new String[] { "IncidentID", "OutageID", "IncidentStatus", "Scheduled" },
 							new String[] { IncidentID, OutageID, "OPEN", "Yes" },
 							new String[] { "String", "String", "String", "String" });
@@ -1351,7 +1558,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						try
 						{
 							// Update Operation
-							numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+							numOfRowsUpdated = s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
 									new String[] { "IncidentStatus" }, new String[] { "CLOSED" },
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, OutageID }, new String[] { "String", "Integer" });
@@ -1369,7 +1576,7 @@ public class WebSpectra implements InterfaceWebSpectra
 						try
 						{
 							// If it is NOT scheduled then the End Time should be updated
-							numOfRowsUpdated = wb.s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
+							numOfRowsUpdated = s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
 									new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
 									new String[] { "CLOSED", Help_Func.now(), RequestID },
 									new String[] { "String", "Date", "String" },
@@ -1389,7 +1596,7 @@ public class WebSpectra implements InterfaceWebSpectra
 								+ IncidentID + "| OutageID: " + OutageID + " successfully CLOSED");
 
 						// Production of the CSV Exported File for the Closed Incident.
-						IncidentOutageToCSV IOCSV = new IncidentOutageToCSV(wb.dbs, wb.s_dbs, IncidentID, OutageID);
+						IncidentOutageToCSV IOCSV = new IncidentOutageToCSV(dbs, s_dbs, IncidentID, OutageID);
 						IOCSV.produceReport();
 
 						poca = new ProductOfCloseOutage(RequestID, IncidentID, OutageID, "990",
@@ -1404,7 +1611,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				} else // If incident is not in status OPEN
 				{
 
-					String closedTime = wb.s_dbs.getOneValue("Test_SubmittedIncidents", "EndTime",
+					String closedTime = s_dbs.getOneValue("Test_SubmittedIncidents", "EndTime",
 							new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 							new String[] { "String", "String" });
 					logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: INCID: "
@@ -1430,13 +1637,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			try
 			{
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - Close Outage: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
@@ -1459,7 +1666,46 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "ServiceL3") @XmlElement(required = false) String ServiceL3)
 			throws Exception, InvalidInputException
 	{
-		WebSpectra wb = new WebSpectra();
+		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
+		Connection conn = null;
+		DB_Connection conObj = null;
+		DB_Operations dbs = null;
+		Connection s_conn = null;
+		s_DB_Connection s_conObj = null;
+		s_DB_Operations s_dbs = null;
+		HttpServletRequest req = null;
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+		//System.out.println("Client IP = " + req.getRemoteAddr());
+
+		if (conn == null)
+		{
+			try
+			{
+				conObj = new DB_Connection();
+				conn = conObj.connect();
+				dbs = new DB_Operations(conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		if (s_conn == null)
+		{
+			try
+			{
+				s_conObj = new s_DB_Connection();
+				s_conn = s_conObj.connect();
+				s_dbs = new s_DB_Operations(s_conn);
+			} catch (Exception ex)
+			{
+				logger.fatal("Could not open connection with database!");
+				throw new Exception(ex.getMessage());
+			}
+		}
+
+		new WebSpectra();
 		ProductOfNLUActive ponla = null;
 		try
 		{
@@ -1467,14 +1713,14 @@ public class WebSpectra implements InterfaceWebSpectra
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
-			wb.establishDBConnection();
-			wb.establishStaticTablesDBConnection();
+			//establishDBConnection();
+			//establishStaticTablesDBConnection();
 
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Establishing DB Connection");
 			logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Question for CLI Outage of "
 					+ CLI);
 			// Check if Authentication credentials are correct.
-			if (!wb.s_dbs.authenticateRequest(UserName, Password, "test_nluService"))
+			if (!s_dbs.authenticateRequest(UserName, Password, "test_nluService"))
 			{
 				logger.error(req.getRemoteAddr() + " - ReqID: " + RequestID
 						+ "NLU Active: - Wrong credentials provided - UserName: " + UserName + " Password: "
@@ -1497,7 +1743,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			Test_CLIOutage co = new Test_CLIOutage(wb.dbs, wb.s_dbs, RequestID);
+			Test_CLIOutage co = new Test_CLIOutage(dbs, s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
 		} catch (Exception e)
@@ -1508,13 +1754,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			try
 			{
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
-				if (wb.conObj != null)
+				if (conObj != null)
 				{
-					wb.conObj.closeDBConnection();
+					conObj.closeDBConnection();
 				}
-				if (wb.s_conObj != null)
+				if (s_conObj != null)
 				{
-					wb.s_conObj.closeDBConnection();
+					s_conObj.closeDBConnection();
 				}
 			} catch (Exception e)
 			{
