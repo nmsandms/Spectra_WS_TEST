@@ -51,8 +51,8 @@ public class s_DB_Connection
 			//{
 			//	MyDataSource.getUpdatedResourceData();
 			//}
-
-			conn = s_MyDataSource.getConnection();
+			s_MyDataSource smds = new s_MyDataSource();
+			conn = smds.getConnection();
 			/**
 			 * Implemented Connection Pooling! Requires Glassfish configuration (JDBC
 			 * Connection Pool + JDBC Resource)
