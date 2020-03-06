@@ -51,7 +51,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	private s_DB_Connection s_conObj;
 	private s_DB_Operations s_dbs;
 	private HttpServletRequest req;
-	
+
 	Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 	String hierSep = "->";
 	Connection conn;
@@ -61,7 +61,7 @@ public class WebSpectra implements InterfaceWebSpectra
 	s_DB_Connection s_conObj;
 	s_DB_Operations s_dbs;
 	HttpServletRequest req;
-	
+
 	*/
 	// Those directive is for IP retrieval of web request
 	@Resource
@@ -179,6 +179,8 @@ public class WebSpectra implements InterfaceWebSpectra
 		new WebSpectra();
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
@@ -201,14 +203,14 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if Required fields are empty
-			Help_Func.validateNotEmpty("RequestID", RequestID);
-			Help_Func.validateNotEmpty("SystemID", SystemID);
-			Help_Func.validateNotEmpty("UserID", UserID);
+			hf.validateNotEmpty("RequestID", RequestID);
+			hf.validateNotEmpty("SystemID", SystemID);
+			hf.validateNotEmpty("UserID", UserID);
 
 			// Validate Date Formats if the fields are not empty
-			if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
+			if (!hf.checkIfEmpty("RequestTimestamp", RequestTimestamp))
 			{
-				Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+				hf.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			}
 
 			// Update Statistics
@@ -237,7 +239,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				ArrayList<String> nodeValuesArrayList = new ArrayList<String>();
 
 				// Get root hierarchy String
-				String rootElementInHierarchy = Help_Func.getRootHierarchyNode(Hierarchy);
+				String rootElementInHierarchy = hf.getRootHierarchyNode(Hierarchy);
 
 				// Get Hierarchy Table for that root hierarchy
 				String table = dbs.getOneValue("HierarchyTablePerTechnology2", "HierarchyTableName",
@@ -252,7 +254,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 				// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 				// hierarchy e.g. SiteNa7me=AKADIMIAS)
-				Help_Func.checkColumnsOfHierarchyVSFullHierarchy(Hierarchy, fullHierarchyFromDB);
+				hf.checkColumnsOfHierarchyVSFullHierarchy(Hierarchy, fullHierarchyFromDB);
 
 				// Split the hierarchy retrieved from DB into fields
 				String[] fullHierarchyFromDBSplit = fullHierarchyFromDB.split("->");
@@ -330,8 +332,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						// Help_Func.HierarchyToPredicate(Hierarchy));
 
 						ElementsList = dbs.getOneColumnUniqueResultSet(table,
-								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], Help_Func.hierarchyKeys(Hierarchy),
-								Help_Func.hierarchyValues(Hierarchy), Help_Func.hierarchyStringTypes(Hierarchy));
+								fullHierarchyFromDBSplit[hierItemsGiven.length - 1], hf.hierarchyKeys(Hierarchy),
+								hf.hierarchyValues(Hierarchy), hf.hierarchyStringTypes(Hierarchy));
 
 						String[] nodeNames = nodeNamesArrayList.toArray(new String[nodeNamesArrayList.size()]);
 						String[] nodeValues = nodeValuesArrayList.toArray(new String[nodeValuesArrayList.size()]);
@@ -466,6 +468,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
@@ -489,64 +493,64 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if Required fields are not empty and they contain the desired values
-			Help_Func.validateNotEmpty("RequestID", RequestID);
-			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
-			if (!Help_Func.checkIfEmpty("RequestTimestamp", RequestTimestamp))
+			hf.validateNotEmpty("RequestID", RequestID);
+			hf.validateNotEmpty("RequestTimestamp", RequestTimestamp);
+			if (!hf.checkIfEmpty("RequestTimestamp", RequestTimestamp))
 			{
-				Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+				hf.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
 			}
 
-			Help_Func.validateNotEmpty("StartTime", StartTime);
-			if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+			hf.validateNotEmpty("StartTime", StartTime);
+			if (!hf.checkIfEmpty("StartTime", StartTime))
 			{
-				Help_Func.validateDateTimeFormat("StartTime", StartTime);
+				hf.validateDateTimeFormat("StartTime", StartTime);
 			}
-			if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+			if (!hf.checkIfEmpty("EndTime", EndTime))
 			{
-				Help_Func.validateDateTimeFormat("EndTime", EndTime);
+				hf.validateDateTimeFormat("EndTime", EndTime);
 			}
 
-			Help_Func.validateNotEmpty("SystemID", SystemID);
-			Help_Func.validateNotEmpty("UserID", UserID);
-			Help_Func.validateNotEmpty("IncidentID", IncidentID);
+			hf.validateNotEmpty("SystemID", SystemID);
+			hf.validateNotEmpty("UserID", UserID);
+			hf.validateNotEmpty("IncidentID", IncidentID);
 
-			Help_Func.validateNotEmpty("Scheduled", Scheduled);
-			Help_Func.validateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
+			hf.validateNotEmpty("Scheduled", Scheduled);
+			hf.validateAgainstPredefinedValues("Scheduled", Scheduled, new String[] { "Yes", "No" });
 
 			// If the submitted incident is scheduled then it should always has "EndTime"
 			if (Scheduled.equals("Yes"))
 			{
-				if (Help_Func.checkIfEmpty("EndTime", EndTime))
+				if (hf.checkIfEmpty("EndTime", EndTime))
 				{
 					throw new InvalidInputException("Scheduled incidents should always contain Start Time and End Time",
 							"Error 172");
 				}
 			} else if (Scheduled.equals("No")) // If the submitted incident is NON scheduled then it should NOT contain "EndTime"
 			{
-				if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+				if (!hf.checkIfEmpty("EndTime", EndTime))
 				{
 					throw new InvalidInputException(
 							"Non scheduled incidents should not contain End Time during submission", "Error 173");
 				}
 			}
 
-			Help_Func.validateIntegerOrEmptyValue("Duration", Duration);
+			hf.validateIntegerOrEmptyValue("Duration", Duration);
 
-			Help_Func.validateNotEmpty("AffectedServices", AffectedServices);
-			Help_Func.validateDelimitedValues("AffectedServices", AffectedServices, "\\|",
+			hf.validateNotEmpty("AffectedServices", AffectedServices);
+			hf.validateDelimitedValues("AffectedServices", AffectedServices, "\\|",
 					new String[] { "Voice", "Data", "IPTV" });
 
-			Help_Func.validateNotEmpty("Impact", Impact);
-			Help_Func.validateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
+			hf.validateNotEmpty("Impact", Impact);
+			hf.validateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
 
-			Help_Func.validateNotEmpty("Priority", Priority);
-			Help_Func.validateAgainstPredefinedValues("Priority", Priority,
+			hf.validateNotEmpty("Priority", Priority);
+			hf.validateAgainstPredefinedValues("Priority", Priority,
 					new String[] { "Critical", "Medium", "Low", "High" });
 
-			Help_Func.validateNotEmpty("HierarchySelected", HierarchySelected);
+			hf.validateNotEmpty("HierarchySelected", HierarchySelected);
 
 			// Split to % and to | the hierarchy provided
-			List<String> myHier = Help_Func.getHierarchySelections(HierarchySelected);
+			List<String> myHier = hf.getHierarchySelections(HierarchySelected);
 
 			// Get Max Outage ID (type int)
 			OutageID_Integer = s_dbs.getMaxIntegerValue("Test_SubmittedIncidents", "OutageID");
@@ -558,7 +562,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			 * 	•	Exception 1 : RootHierarchyNode = Wind_FTTX , HierarchyTableNamePath : 'OltElementName->OltSlot->OltPort->Onu
 			 *	•	Exception 2 : RootHierarchyNode = FTTC_Location_Element , HierarchyTableNamePath : Site Name
 			 */
-			Help_Func.declineSubmissionOnCertainHierarchyLevels(myHier);
+			hf.declineSubmissionOnCertainHierarchyLevels(myHier);
 
 			// Update Statistics
 			s_dbs.updateUsageStatisticsForMethod("SubmitOutage");
@@ -579,11 +583,11 @@ public class WebSpectra implements InterfaceWebSpectra
 					}
 
 					// Check Hierarchy Format Key_Value Pairs
-					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
+					hf.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
 
 					// Firstly determine the hierarchy table that will be used based on the root
 					// hierarchy provided
-					String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
+					String rootHierarchySelected = hf.getRootHierarchyNode(myHier.get(i).toString());
 
 					// Get Hierarchy data in style :
 					// OltElementName->OltSlot->OltPort->Onu->ElementName->Slot
@@ -593,7 +597,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					// Check Columns of Hierarchy against fullHierarchy (avoid wrong key values in
 					// hierarchy e.g. SiteNa7me=AKADIMIAS)
-					Help_Func.checkColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
+					hf.checkColumnsOfHierarchyVSFullHierarchy(myHier.get(i).toString(), fullHierarchyFromDB);
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
@@ -635,33 +639,33 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Count distinct values of Usernames or CliVlaues in the respective columns
 					String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
 							ngaTypes);
 
 					// Count distinct values of Usernames or CliVlaues in the respective columns
 					String IPTVCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
 							ngaTypes);
 
 					String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
 							ngaTypes);
 
 					// For Voice no data customers are affected and vice versa
@@ -672,11 +676,11 @@ public class WebSpectra implements InterfaceWebSpectra
 
 						// Get Unique Locations affected from Voice_Resource_Path
 						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_Voice_Resource_Path", "SiteName",
-								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullVoiceHierarchyPathSplit)),
+								hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullVoiceHierarchyPathSplit)),
+								hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullVoiceHierarchyPathSplit)));
 						locationsAffectedList.addAll(myList);
 
@@ -687,11 +691,11 @@ public class WebSpectra implements InterfaceWebSpectra
 
 						// Get Unique Locations affected from Internet_Resource_Path
 						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_Internet_Resource_Path", "SiteName",
-								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullDataHierarchyPathSplit)),
+								hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullDataHierarchyPathSplit)),
+								hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullDataHierarchyPathSplit)));
 						locationsAffectedList.addAll(myList);
 
@@ -702,11 +706,11 @@ public class WebSpectra implements InterfaceWebSpectra
 
 						// Get Unique Locations affected from Internet_Resource_Path
 						List<String> myList = dbs.getOneColumnUniqueResultSet("Prov_IPTV_Resource_Path", "SiteName",
-								Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-								Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-								Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
+								hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullIPTVHierarchyPathSplit)),
+								hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+										fullIPTVHierarchyPathSplit)),
+								hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(
 										myHier.get(i).toString(), fullIPTVHierarchyPathSplit)));
 						locationsAffectedList.addAll(myList);
 					}
@@ -779,7 +783,7 @@ public class WebSpectra implements InterfaceWebSpectra
 
 				// Firstly determine the hierarchy table that will be used based on the root
 				// hierarchy provided
-				String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
+				String rootHierarchySelected = hf.getRootHierarchyNode(myHier.get(i).toString());
 
 				String fullVoiceHierarchyPath = dbs.getOneValue("HierarchyTablePerTechnology2",
 						"VoiceSubscribersTableNamePath", new String[] { "RootHierarchyNode" },
@@ -808,12 +812,12 @@ public class WebSpectra implements InterfaceWebSpectra
 				// Calculate CLIs Affected but replace column names in order to search table for
 				// customers affected
 				String CLIsAffected_String = dbs.countDistinctCLIsAffected(new String[] { "PASPORT_COID" },
-						Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-						Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-						Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-								myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+						hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+								fullVoiceHierarchyPathSplit)),
+						hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+								fullVoiceHierarchyPathSplit)),
+						hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+								fullVoiceHierarchyPathSplit)),
 						ngaTypes, AffectedServices, voiceSubsTable, dataSubsTable, IPTVSubsTable);
 				CLIsAffectedPerIncident += Integer.parseInt(CLIsAffected_String);
 			}
@@ -825,11 +829,11 @@ public class WebSpectra implements InterfaceWebSpectra
 				for (int i = 0; i < myHier.size(); i++)
 				{
 					// Check Hierarchy Format Key_Value Pairs
-					Help_Func.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
+					hf.checkHierarchyFormatKeyValuePairs(myHier.get(i).toString());
 
 					// Firstly determine the hierarchy table that will be used based on the root
 					// hierarchy provided
-					String rootHierarchySelected = Help_Func.getRootHierarchyNode(myHier.get(i).toString());
+					String rootHierarchySelected = hf.getRootHierarchyNode(myHier.get(i).toString());
 
 					// Determine Tables for Data/Voice subscribers
 					String dataSubsTable = dbs.getOneValue("HierarchyTablePerTechnology2", "DataSubscribersTableName",
@@ -871,32 +875,32 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Count distinct values of Usernames or CliVlaues the respective columns
 					String dataCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(dataSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullDataHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullDataHierarchyPathSplit)),
 							ngaTypes);
 
 					String IPTVCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(IPTVSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullIPTVHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullIPTVHierarchyPathSplit)),
 							ngaTypes);
 
 					String voiceCustomersAffected = dbs.countDistinctRowsForSpecificColumnsNGAIncluded(voiceSubsTable,
 							new String[] { "PASPORT_COID" },
-							Help_Func.hierarchyKeys(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyValues(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
-							Help_Func.hierarchyStringTypes(Help_Func.replaceHierarchyForSubscribersAffected(
-									myHier.get(i).toString(), fullVoiceHierarchyPathSplit)),
+							hf.hierarchyKeys(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
+							hf.hierarchyValues(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
+							hf.hierarchyStringTypes(hf.replaceHierarchyForSubscribersAffected(myHier.get(i).toString(),
+									fullVoiceHierarchyPathSplit)),
 							ngaTypes);
 
 					// For Voice no data customers are affected and vice versa
@@ -948,11 +952,11 @@ public class WebSpectra implements InterfaceWebSpectra
 										"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 										"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 										"IncidentAffectedDataCustomers", "IncidentAffectedIPTVCustomers" },
-								new String[] { RequestID, Help_Func.now(), "Yes", OutageID_String, "OPEN",
-										RequestTimestamp, SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime,
-										Duration, service, Impact, Priority, myHier.get(i).toString(),
-										locationsAffected, voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
-										"0", IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
+								new String[] { RequestID, hf.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp,
+										SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service,
+										Impact, Priority, myHier.get(i).toString(), locationsAffected,
+										voiceCustomersAffected, dataCustomersAffected, CLIsAffected, "0",
+										IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
 										Integer.toString(totalDataIncidentAffected),
 										Integer.toString(totalIPTVIncidentAffected) },
 								new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime",
@@ -1060,6 +1064,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
@@ -1073,8 +1079,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			prodElementsList = new ArrayList<>();
 
 			// Check if fields are empty
-			Help_Func.validateNotEmpty("IncidentID", IncidentID);
-			Help_Func.validateNotEmpty("IncidentStatus", IncidentStatus);
+			hf.validateNotEmpty("IncidentID", IncidentID);
+			hf.validateNotEmpty("IncidentStatus", IncidentStatus);
 
 			// Check if Authentication credentials are correct.
 			if (!s_dbs.authenticateRequest(UserName, Password, "test_remedyService"))
@@ -1230,6 +1236,8 @@ public class WebSpectra implements InterfaceWebSpectra
 
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
@@ -1254,39 +1262,39 @@ public class WebSpectra implements InterfaceWebSpectra
 			ProductOfModify pom = null;
 
 			// Check if Required fields are empty
-			Help_Func.validateNotEmpty("RequestID", RequestID);
-			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateNotEmpty("SystemID", SystemID);
-			Help_Func.validateNotEmpty("UserID", UserID);
-			Help_Func.validateNotEmpty("IncidentID", IncidentID);
-			Help_Func.validateNotEmpty("OutageID", OutageID);
+			hf.validateNotEmpty("RequestID", RequestID);
+			hf.validateNotEmpty("RequestTimestamp", RequestTimestamp);
+			hf.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			hf.validateNotEmpty("SystemID", SystemID);
+			hf.validateNotEmpty("UserID", UserID);
+			hf.validateNotEmpty("IncidentID", IncidentID);
+			hf.validateNotEmpty("OutageID", OutageID);
 
 			// if Start Time Value Exists
-			if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+			if (!hf.checkIfEmpty("StartTime", StartTime))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateDateTimeFormat("StartTime", StartTime);
+				hf.validateDateTimeFormat("StartTime", StartTime);
 			}
 			// if End Time Value Exists
-			if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+			if (!hf.checkIfEmpty("EndTime", EndTime))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateDateTimeFormat("EndTime", EndTime);
+				hf.validateDateTimeFormat("EndTime", EndTime);
 			}
 
 			// if Impact Value Exists
-			if (!Help_Func.checkIfEmpty("Impact", Impact))
+			if (!hf.checkIfEmpty("Impact", Impact))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
+				hf.validateAgainstPredefinedValues("Impact", Impact, new String[] { "QoS", "LoS" });
 			}
 
 			// if Duration Value Exists
-			if (!Help_Func.checkIfEmpty("Duration", Duration))
+			if (!hf.checkIfEmpty("Duration", Duration))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateIntegerOrEmptyValue("Duration", Duration);
+				hf.validateIntegerOrEmptyValue("Duration", Duration);
 			}
 
 			// Check if the combination of IncidentID & OutageID exists
@@ -1306,7 +1314,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				List<String> listOfValuesForUpdate = new ArrayList<>();
 				List<String> listOfDataTypesForUpdate = new ArrayList<>();
 
-				if (!Help_Func.checkIfEmpty("StartTime", StartTime))
+				if (!hf.checkIfEmpty("StartTime", StartTime))
 				{
 					listOfColumnsForUpdate.add("StartTime");
 					listOfValuesForUpdate.add(StartTime);
@@ -1317,7 +1325,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfDataTypesForUpdate.add("String");
 				}
 
-				if (!Help_Func.checkIfEmpty("EndTime", EndTime))
+				if (!hf.checkIfEmpty("EndTime", EndTime))
 				{
 					listOfColumnsForUpdate.add("EndTime");
 					listOfValuesForUpdate.add(EndTime);
@@ -1328,7 +1336,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfDataTypesForUpdate.add("String");
 				}
 
-				if (!Help_Func.checkIfEmpty("Impact", Impact))
+				if (!hf.checkIfEmpty("Impact", Impact))
 				{
 					listOfColumnsForUpdate.add("Impact");
 					listOfValuesForUpdate.add(Impact);
@@ -1339,7 +1347,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					listOfDataTypesForUpdate.add("String");
 				}
 
-				if (!Help_Func.checkIfEmpty("Duration", Duration))
+				if (!hf.checkIfEmpty("Duration", Duration))
 				{
 					listOfColumnsForUpdate.add("Duration");
 					listOfValuesForUpdate.add(Duration);
@@ -1358,8 +1366,8 @@ public class WebSpectra implements InterfaceWebSpectra
 						.toArray(new String[listOfDataTypesForUpdate.size()]);
 
 				// Update Start/End Times ONLY for Scheduled Incidents
-				if (!incidentIsScheduled && (!Help_Func.checkIfEmpty("StartTime", StartTime)
-						|| (!Help_Func.checkIfEmpty("EndTime", EndTime))))
+				if (!incidentIsScheduled
+						&& (!hf.checkIfEmpty("StartTime", StartTime) || (!hf.checkIfEmpty("EndTime", EndTime))))
 				{
 					throw new InvalidInputException(
 							"The fields of 'Star Time'/'End Time' cannot be modified on non scheduled Outages (Incident: "
@@ -1450,6 +1458,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			@WebParam(name = "OutageID") @XmlElement(required = true) String OutageID)
 			throws Exception, InvalidInputException
 	{
+		Help_Func hf = new Help_Func();
+
 		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
 		Connection conn = null;
 		DB_Connection conObj = null;
@@ -1517,13 +1527,13 @@ public class WebSpectra implements InterfaceWebSpectra
 			ProductOfCloseOutage poca = null;
 
 			// Check if Required fields are empty
-			Help_Func.validateNotEmpty("RequestID", RequestID);
-			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateNotEmpty("SystemID", SystemID);
-			Help_Func.validateNotEmpty("UserID", UserID);
-			Help_Func.validateNotEmpty("IncidentID", IncidentID);
-			Help_Func.validateNotEmpty("OutageID", OutageID);
+			hf.validateNotEmpty("RequestID", RequestID);
+			hf.validateNotEmpty("RequestTimestamp", RequestTimestamp);
+			hf.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			hf.validateNotEmpty("SystemID", SystemID);
+			hf.validateNotEmpty("UserID", UserID);
+			hf.validateNotEmpty("IncidentID", IncidentID);
+			hf.validateNotEmpty("OutageID", OutageID);
 
 			// Check if the combination of IncidentID & OutageID exists
 			boolean incidentPlusOutageExists = s_dbs.checkIfCriteriaExists("Test_SubmittedIncidents",
@@ -1578,7 +1588,7 @@ public class WebSpectra implements InterfaceWebSpectra
 							// If it is NOT scheduled then the End Time should be updated
 							numOfRowsUpdated = s_dbs.updateColumnOnSpecificCriteria("Test_SubmittedIncidents",
 									new String[] { "IncidentStatus", "EndTime", "CloseReqID" },
-									new String[] { "CLOSED", Help_Func.now(), RequestID },
+									new String[] { "CLOSED", hf.now(), RequestID },
 									new String[] { "String", "Date", "String" },
 									new String[] { "IncidentID", "OutageID" }, new String[] { IncidentID, OutageID },
 									new String[] { "String", "Integer" });
@@ -1709,6 +1719,8 @@ public class WebSpectra implements InterfaceWebSpectra
 		ProductOfNLUActive ponla = null;
 		try
 		{
+			Help_Func hf = new Help_Func();
+
 			// Those 2 directives is for IP retrieval of web request
 			MessageContext mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
@@ -1729,18 +1741,18 @@ public class WebSpectra implements InterfaceWebSpectra
 			}
 
 			// Check if Required fields are empty
-			Help_Func.validateNotEmpty("RequestID", RequestID);
-			Help_Func.validateNotEmpty("SystemID", SystemID);
-			Help_Func.validateNotEmpty("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
-			Help_Func.validateNotEmpty("CLI", CLI);
+			hf.validateNotEmpty("RequestID", RequestID);
+			hf.validateNotEmpty("SystemID", SystemID);
+			hf.validateNotEmpty("RequestTimestamp", RequestTimestamp);
+			hf.validateDateTimeFormat("RequestTimestamp", RequestTimestamp);
+			hf.validateNotEmpty("CLI", CLI);
 			// Help_Func.validateNotEmpty("Service", Service);
 
 			// if Impact Value Exists
-			if (!Help_Func.checkIfEmpty("Service", Service))
+			if (!hf.checkIfEmpty("Service", Service))
 			{
 				// Check if it has the appropriate format
-				Help_Func.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
+				hf.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
 			Test_CLIOutage co = new Test_CLIOutage(dbs, s_dbs, RequestID);
