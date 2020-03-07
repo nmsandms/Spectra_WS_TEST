@@ -70,6 +70,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 
@@ -115,7 +116,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func hf = new Help_Func();
 
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			//establishDBConnection();
@@ -328,6 +329,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
@@ -368,6 +370,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 		//System.out.println("Client IP = " + req.getRemoteAddr());
@@ -412,7 +415,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func hf = new Help_Func();
 
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			//establishDBConnection();
@@ -953,6 +956,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
@@ -979,6 +983,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 
@@ -1017,7 +1022,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func hf = new Help_Func();
 
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			////establishDBConnection();
@@ -1124,6 +1129,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
@@ -1157,6 +1163,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 		//System.out.println("Client IP = " + req.getRemoteAddr());
@@ -1196,7 +1203,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func hf = new Help_Func();
 
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			////establishDBConnection();
@@ -1401,6 +1408,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
@@ -1432,6 +1440,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 		//System.out.println("Client IP = " + req.getRemoteAddr());
@@ -1469,7 +1478,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		try
 		{
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			//establishDBConnection();
@@ -1627,6 +1636,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
@@ -1657,6 +1667,7 @@ public class WebSpectra implements InterfaceWebSpectra
 		Connection s_conn = null;
 		s_DB_Connection s_conObj = null;
 		s_DB_Operations s_dbs = null;
+		MessageContext mc = null;
 		HttpServletRequest req = null;
 		//System.out.println("Client IP = " + req.getRemoteAddr());
 		//System.out.println("Client IP = " + req.getRemoteAddr());
@@ -1696,7 +1707,7 @@ public class WebSpectra implements InterfaceWebSpectra
 			Help_Func hf = new Help_Func();
 
 			// Those 2 directives is for IP retrieval of web request
-			MessageContext mc = wsContext.getMessageContext();
+			mc = wsContext.getMessageContext();
 			req = (HttpServletRequest) mc.get(MessageContext.SERVLET_REQUEST);
 
 			//establishDBConnection();
@@ -1755,6 +1766,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				s_conn = null;
 				s_conObj = null;
 				s_dbs = null;
+				mc = null;
 				req = null;
 
 			} catch (Exception e)
