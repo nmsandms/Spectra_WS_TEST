@@ -219,7 +219,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -527,6 +527,10 @@ public class Test_CLIOutage
 			ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none", "none",
 					"none", "none", "NULL", "NULL", "NULL");
 		}
+
+		dbs = null;
+		s_dbs = null;
+		requestID = null;
 
 		return ponla;
 	}
