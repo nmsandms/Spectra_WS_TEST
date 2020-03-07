@@ -214,5 +214,10 @@ public class IncidentOutageToCSV
 					hf.hierarchyStringTypes(HierarchySelected), ngaTypes);
 			sCSV.start();
 		}
+
+		dbs = null;
+		s_dbs = null;
+		incidentID = null;
+		outageID = null;
 	}
 }
