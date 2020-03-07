@@ -49,50 +49,6 @@ public class WebSpectra implements InterfaceWebSpectra
 
 	}
 
-	@WebMethod(exclude = true)
-	public void establishDBConnection() throws Exception
-	{
-		Logger logger = LogManager.getLogger(gr.wind.spectra.web.WebSpectra.class.getName());
-		Connection conn = null;
-		DB_Connection conObj;
-		Connection s_conn = null;
-		s_DB_Connection s_conObj;
-		if (conn == null)
-		{
-			try
-			{
-				conObj = new DB_Connection();
-				conn = conObj.connect();
-				new DB_Operations(conn);
-			} catch (Exception ex)
-			{
-				logger.fatal("Could not open connection with database!");
-				throw new Exception(ex.getMessage());
-			}
-		}
-
-		if (s_conn == null)
-		{
-			try
-			{
-				s_conObj = new s_DB_Connection();
-				s_conn = s_conObj.connect();
-				new s_DB_Operations(s_conn);
-			} catch (Exception ex)
-			{
-				logger.fatal("Could not open connection with database!");
-				throw new Exception(ex.getMessage());
-			}
-		}
-	}
-
-	@WebMethod(exclude = true)
-	public void establishStaticTablesDBConnection() throws Exception
-	{
-		//System.out.println("Client IP = " + req.getRemoteAddr());
-
-	}
-
 	@Override
 	@WebMethod()
 	@WebResult(name = "Result")
@@ -366,6 +322,14 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+				conn = null;
+				conObj = null;
+				dbs = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("Get Hierarchy Finally block");
@@ -982,6 +946,15 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+
+				conn = null;
+				conObj = null;
+				dbs = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("Submit Outage Finally block");
@@ -1146,6 +1119,13 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+				conn = null;
+				conObj = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("Get Outage Status Finally block");
@@ -1415,6 +1395,14 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+
+				conn = null;
+				conObj = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("Modify Outage Finally block");
@@ -1632,6 +1620,15 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+
+				conn = null;
+				conObj = null;
+				dbs = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("Close Outage Finally block");
@@ -1751,6 +1748,15 @@ public class WebSpectra implements InterfaceWebSpectra
 				{
 					s_conObj.closeDBConnection();
 				}
+
+				conn = null;
+				conObj = null;
+				dbs = null;
+				s_conn = null;
+				s_conObj = null;
+				s_dbs = null;
+				req = null;
+
 			} catch (Exception e)
 			{
 				logger.info("NLU Active Finally block");
