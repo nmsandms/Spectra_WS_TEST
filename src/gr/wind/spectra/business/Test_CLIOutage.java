@@ -208,6 +208,7 @@ public class Test_CLIOutage
 							isOutageWithinScheduledRange = false;
 							logger.debug(
 									"ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID + " is NOT ongoing");
+							continue;
 						}
 
 						// If the scheduled period (Start Time - End Time) has passed current local time then change the Incident status to "CLOSED"
@@ -219,7 +220,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
