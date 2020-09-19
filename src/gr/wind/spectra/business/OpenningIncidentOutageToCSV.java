@@ -179,6 +179,7 @@ public class OpenningIncidentOutageToCSV
 					hf.hierarchyStringTypes(HierarchySelected), ngaTypes);
 			sCSV.start();
 		}
+
 		// If the closed incident is a "Voice" affected one
 		else if (outageAffectedService.equals("Voice"))
 		{
