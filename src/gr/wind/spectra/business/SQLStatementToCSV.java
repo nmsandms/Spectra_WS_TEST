@@ -109,7 +109,7 @@ public class SQLStatementToCSV extends Thread
 		logger.info("Thread execution in ResultSetToCSV Class Started!");
 		try
 		{
-			System.out.println(sqlQuery);
+			// System.out.println(sqlQuery);
 
 			// Export Affected CLIs to File
 			PreparedStatement pst = conn.prepareStatement(sqlQuery);
@@ -183,7 +183,7 @@ public class SQLStatementToCSV extends Thread
 				// Write to ClosedOutages_AffectedCLIs table only for CLOSED incident, (not for OPEN)
 				if (!"null".equals(columnsForExport[6]))
 				{
-					System.out.println("columnsForExport[6] = " + columnsForExport[6]);
+					// System.out.println("columnsForExport[6] = " + columnsForExport[6]);
 					// Insert Values in Database
 					s_dbs.insertValuesInTable("Test_ClosedOutages_AffectedCLIs",
 							new String[] { "CliValue", "OutageID", "IncidentStatus", "IncidentID", "Scheduled",

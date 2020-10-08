@@ -1379,7 +1379,7 @@ public class WebSpectra implements InterfaceWebSpectra
 							+ Arrays.toString(arrayOfValuesForUpdate));
 				} else
 				{
-					System.out.println("Modifying: numOfRowsUpdated = " + numOfRowsUpdated);
+					// System.out.println("Modifying: numOfRowsUpdated = " + numOfRowsUpdated);
 					pom = new ProductOfModify(RequestID, IncidentID, OutageID, "980", "Error modifying incident!");
 				}
 			} else

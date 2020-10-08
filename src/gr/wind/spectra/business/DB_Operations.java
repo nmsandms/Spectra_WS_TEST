@@ -410,10 +410,10 @@ public class DB_Operations
 		Pattern.compile("^Cabinet_Code");
 		Pattern.compile("Wind_FTTX");
 		Pattern.compile("^FTTC_Location_Element");
-		
+
 		boolean b1, b2, b3;
 		b1 = b2 = b3 = false;
-		
+
 		if (hierarchyGiven.startsWith("Cabinet_Code"))
 		{
 			b1 = true;
@@ -426,7 +426,7 @@ public class DB_Operations
 		{
 			b3 = true;
 		}
-		
+
 		if (b1 || b2 || b3)
 		{
 			output = "Yes";
@@ -434,7 +434,7 @@ public class DB_Operations
 		{
 			output = "No";
 		}
-		
+
 		return output;
 		*/
 
@@ -505,17 +505,17 @@ public class DB_Operations
 			SELECT COUNT(DISTINCT PASPORT_COID) AS Result FROM
 			(
 				SELECT DISTINCT (PASPORT_COID) from Prov_Voice_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_Internet_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			    UNION ALL
-		
+
 			    SELECT DISTINCT (PASPORT_COID) from Prov_IPTV_Resource_Path WHERE `OltElementName` = ? AND `OltRackNo` = ? AND `NGA_TYPE` IN ('WIND_FTTH','WIND_FTTC')
-		
+
 			) as AK;
-		
+
 		 */
 
 		Help_Func hf = new Help_Func();
@@ -558,7 +558,7 @@ public class DB_Operations
 			totalQuery += sqlQueryForVoice + " UNION ALL " + sqlQueryForData + " UNION ALL " + sqlQueryForIPTV
 					+ ") as AK";
 
-			System.out.println("544: SqlQuery: " + totalQuery);
+			// System.out.println("544: SqlQuery: " + totalQuery);
 			logger.trace(totalQuery);
 			PreparedStatement pst = conn.prepareStatement(totalQuery);
 
@@ -675,7 +675,7 @@ public class DB_Operations
 			totalQuery += ") as AK";
 
 			logger.trace(totalQuery);
-			System.out.println("544: SqlQuery: " + totalQuery);
+			// System.out.println("544: SqlQuery: " + totalQuery);
 			PreparedStatement pst = conn.prepareStatement(totalQuery);
 
 			// X Queries iterations x number of predicates
