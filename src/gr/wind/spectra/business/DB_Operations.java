@@ -184,8 +184,13 @@ public class DB_Operations
 		}
 		// pst.execute();
 		ResultSet rs = pst.executeQuery();
-		rs.next();
-		output = rs.getString(columnName);
+		if (rs.next())
+		{
+			output = rs.getString(columnName);
+		} else
+		{
+			output = "";
+		}
 		rs.close();
 
 		return output;
