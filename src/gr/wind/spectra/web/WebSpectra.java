@@ -311,11 +311,17 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			}
 
+			return prodElementsList;
+		} catch (Exception e)
+		{
+			throw e;
+		} finally
+		{
 			// Send Similar request to Spectra_Reporting server
 			try
 			{
-				Async_GetHierarchy aGH = new Async_GetHierarchy(UserName, Password, RequestID, RequestTimestamp, SystemID,
-						UserID, Hierarchy);
+				Async_GetHierarchy aGH = new Async_GetHierarchy(UserName, Password, RequestID, RequestTimestamp,
+						SystemID, UserID, Hierarchy);
 				aGH.run();
 			} catch (Exception e)
 			{
@@ -323,12 +329,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				e.printStackTrace();
 			}
 
-			return prodElementsList;
-		} catch (Exception e)
-		{
-			throw e;
-		} finally
-		{
 			try
 			{
 				logger.trace(
@@ -954,12 +954,18 @@ public class WebSpectra implements InterfaceWebSpectra
 				}
 			}
 
+			return prodElementsList;
+		} catch (Exception e)
+		{
+			throw e;
+		} finally
+		{
 			// Send Similar request to Spectra_Reporting server
 			try
 			{
-				Async_SubmitOutage sOut = new Async_SubmitOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-						UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, AffectedServices, Impact, Priority,
-						HierarchySelected);
+				Async_SubmitOutage sOut = new Async_SubmitOutage(UserName, Password, RequestID, RequestTimestamp,
+						SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, AffectedServices, Impact,
+						Priority, HierarchySelected);
 				sOut.run();
 			} catch (Exception e)
 			{
@@ -967,12 +973,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				e.printStackTrace();
 			}
 
-			return prodElementsList;
-		} catch (Exception e)
-		{
-			throw e;
-		} finally
-		{
 			try
 			{
 				logger.trace(
@@ -1418,18 +1418,6 @@ public class WebSpectra implements InterfaceWebSpectra
 						+ OutageID + " does not exist!", "Error 550");
 			}
 
-			// Send Similar request to Spectra_Reporting server
-			try
-			{
-				Async_ModifyOutage mOut = new Async_ModifyOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-						UserID, IncidentID, OutageID, StartTime, EndTime, Duration, Impact);
-				mOut.run();
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 			// Return instance of class ProductOfModify
 			return pom;
 		} catch (Exception e)
@@ -1437,6 +1425,18 @@ public class WebSpectra implements InterfaceWebSpectra
 			throw e;
 		} finally
 		{
+			// Send Similar request to Spectra_Reporting server
+			try
+			{
+				Async_ModifyOutage mOut = new Async_ModifyOutage(UserName, Password, RequestID, RequestTimestamp,
+						SystemID, UserID, IncidentID, OutageID, StartTime, EndTime, Duration, Impact);
+				mOut.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			try
 			{
 				// Close DB Connection
@@ -1663,8 +1663,8 @@ public class WebSpectra implements InterfaceWebSpectra
 			// Send Similar request to Spectra_Reporting server
 			try
 			{
-				Async_CloseOutage cOut = new Async_CloseOutage(UserName, Password, RequestID, RequestTimestamp, SystemID,
-						UserID, IncidentID, OutageID);
+				Async_CloseOutage cOut = new Async_CloseOutage(UserName, Password, RequestID, RequestTimestamp,
+						SystemID, UserID, IncidentID, OutageID);
 				cOut.run();
 			} catch (Exception e)
 			{
@@ -1800,18 +1800,6 @@ public class WebSpectra implements InterfaceWebSpectra
 				hf.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			// Send Similar request to Spectra_Reporting server
-			try
-			{
-				Async_NLUActive nluA = new Async_NLUActive(UserName, Password, RequestID, RequestTimestamp, SystemID, CLI,
-						Service, ServiceL2, ServiceL3);
-				nluA.run();
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 			Test_CLIOutage co = new Test_CLIOutage(dbs, s_dbs, RequestID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
@@ -1820,6 +1808,18 @@ public class WebSpectra implements InterfaceWebSpectra
 			throw e;
 		} finally
 		{
+			// Send Similar request to Spectra_Reporting server
+			try
+			{
+				Async_NLUActive nluA = new Async_NLUActive(UserName, Password, RequestID, RequestTimestamp, SystemID,
+						CLI, Service, ServiceL2, ServiceL3);
+				nluA.run();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			try
 			{
 				logger.trace(req.getRemoteAddr() + " - ReqID: " + RequestID + " - NLU Active: Closing DB Connection");
