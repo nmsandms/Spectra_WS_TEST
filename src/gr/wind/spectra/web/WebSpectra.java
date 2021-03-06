@@ -46,7 +46,7 @@ import gr.wind.spectra.model.ProductOfSubmission;
 @WebService(endpointInterface = "gr.wind.spectra.web.InterfaceWebSpectra")
 public class WebSpectra implements InterfaceWebSpectra
 {
-	// Those directive is for IP retrieval of web request
+	// Those directive is for IP retrieval of web request :-)
 	@Resource
 	private WebServiceContext wsContext;
 
