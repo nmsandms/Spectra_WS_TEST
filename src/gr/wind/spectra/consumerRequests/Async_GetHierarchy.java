@@ -11,8 +11,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import gr.wind.spectra.consumer.GetHierarchy;
-import gr.wind.spectra.consumer.WebSpectraService;
+import gr.wind.spectra.consumer.oneway.GetHierarchy;
+import gr.wind.spectra.consumer.oneway.WebSpectraService;
 
 public class Async_GetHierarchy extends Thread
 {
@@ -38,7 +38,6 @@ public class Async_GetHierarchy extends Thread
 	}
 
 	@Override
-	@SuppressWarnings(value = { "com.sun.xml.ws.model.JavaMethodImpl" })
 	public void run()
 	{
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
@@ -95,7 +94,7 @@ public class Async_GetHierarchy extends Thread
 
 		// Send request to Spectra_Reporting
 		WebSpectraService myWebService = new WebSpectraService();
-		gr.wind.spectra.consumer.InterfaceWebSpectra iws = myWebService.getWebSpectraPort();
+		gr.wind.spectra.consumer.oneway.InterfaceWebSpectra iws = myWebService.getWebSpectraPort();
 
 		GetHierarchy gh = new GetHierarchy();
 		gh.setRequestID(this.RequestID);
