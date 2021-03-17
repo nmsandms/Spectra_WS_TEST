@@ -155,6 +155,7 @@ public class Test_CLIOutage
 			Date foundEndTime = null;
 			String foundImpact = "";
 			String EndTimeString = null;
+			String foundOutageMsg = "";
 
 			for (String service : ServiceTypeSplitted)
 			{
@@ -162,7 +163,8 @@ public class Test_CLIOutage
 				// Get Lines with IncidentStatus = "OPEN"
 				rs = s_dbs.getRows("Test_SubmittedIncidents",
 						new String[] { "WillBePublished", "IncidentID", "OutageID", "HierarchySelected", "Priority",
-								"AffectedServices", "Scheduled", "Duration", "StartTime", "EndTime", "Impact" },
+								"AffectedServices", "Scheduled", "Duration", "StartTime", "EndTime", "Impact",
+								"OutageMsg" },
 						new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 				while (rs.next())
@@ -180,6 +182,7 @@ public class Test_CLIOutage
 					Date StartTime = rs.getTimestamp("StartTime");
 					Date EndTime = rs.getTimestamp("EndTime");
 					String Impact = rs.getString("Impact");
+					String OutageMsg = rs.getString("OutageMsg");
 
 					// If it is OPEN & Scheduled & Date(Now) > StartTime then set
 					// isOutageWithinScheduledRange to TRUE
@@ -220,7 +223,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -265,6 +268,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
@@ -283,6 +287,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
@@ -324,6 +329,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
@@ -342,6 +348,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
@@ -383,6 +390,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
@@ -401,6 +409,7 @@ public class Test_CLIOutage
 								foundStartTime = StartTime;
 								foundEndTime = EndTime;
 								foundImpact = Impact;
+								foundOutageMsg = OutageMsg;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
@@ -523,8 +532,8 @@ public class Test_CLIOutage
 				ucdt.run();
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
-						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, "NULL", "NULL",
-						"NULL");
+						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, foundOutageMsg,
+						"NULL", "NULL");
 			}
 
 		} else
