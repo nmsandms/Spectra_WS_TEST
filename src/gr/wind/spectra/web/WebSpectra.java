@@ -903,28 +903,39 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Concatenate locations with pipe
 					locationsAffected = String.join("|", uniqueLocationsSet);
 
+					// Backup Eligible - Addition of 23 Apr 2021
+					String backupEligible = "";
+
+					if (Impact.equals("LoS") && (service.equals("Voice") || service.equals("Data")))
+					{
+						backupEligible = "Yes";
+					} else
+					{
+						backupEligible = "No";
+					}
+
 					// Insert Values in Database
 					try
 					{
 						s_dbs.insertValuesInTable("Test_SubmittedIncidents",
-								new String[] { "OpenReqID", "DateTime", "WillBePublished", "OutageID", "IncidentStatus",
-										"RequestTimestamp", "SystemID", "UserID", "IncidentID", "Scheduled",
-										"StartTime", "EndTime", "Duration", "AffectedServices", "Impact", "Priority",
-										"HierarchySelected", "Locations", "AffectedVoiceCustomers",
+								new String[] { "OpenReqID", "DateTime", "WillBePublished", "BackupEligible", "OutageID",
+										"IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
+										"Scheduled", "StartTime", "EndTime", "Duration", "AffectedServices", "Impact",
+										"Priority", "HierarchySelected", "Locations", "AffectedVoiceCustomers",
 										"AffectedDataCustomers", "AffectedCLICustomers", "ActiveDataCustomersAffected",
 										"TVCustomersAffected", "IncidentAffectedVoiceCustomers",
 										"IncidentAffectedDataCustomers", "IncidentAffectedIPTVCustomers" },
-								new String[] { RequestID, hf.now(), "Yes", OutageID_String, "OPEN", RequestTimestamp,
-										SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime, Duration, service,
-										Impact, Priority, myHier.get(i).toString(), locationsAffected,
-										voiceCustomersAffected, dataCustomersAffected, CLIsAffected, "0",
-										IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
+								new String[] { RequestID, hf.now(), "Yes", backupEligible, OutageID_String, "OPEN",
+										RequestTimestamp, SystemID, UserID, IncidentID, Scheduled, StartTime, EndTime,
+										Duration, service, Impact, Priority, myHier.get(i).toString(),
+										locationsAffected, voiceCustomersAffected, dataCustomersAffected, CLIsAffected,
+										"0", IPTVCustomersAffected, Integer.toString(totalVoiceIncidentAffected),
 										Integer.toString(totalDataIncidentAffected),
 										Integer.toString(totalIPTVIncidentAffected) },
-								new String[] { "String", "DateTime", "String", "Integer", "String", "DateTime",
-										"String", "String", "String", "String", "DateTime", "DateTime", "String",
-										"String", "String", "String", "String", "String", "Integer", "Integer",
-										"Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
+								new String[] { "String", "DateTime", "String", "String", "Integer", "String",
+										"DateTime", "String", "String", "String", "String", "DateTime", "DateTime",
+										"String", "String", "String", "String", "String", "String", "Integer",
+										"Integer", "Integer", "Integer", "Integer", "Integer", "Integer", "Integer" });
 					} catch (SQLException e)
 					{
 						throw new InvalidInputException("An Error occured during submission of data!", "Error 1500");

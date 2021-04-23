@@ -156,6 +156,7 @@ public class Test_CLIOutage
 			String foundImpact = "";
 			String EndTimeString = null;
 			String foundOutageMsg = "";
+			String foundFlag2_BackupEligible = "";
 
 			for (String service : ServiceTypeSplitted)
 			{
@@ -183,6 +184,7 @@ public class Test_CLIOutage
 					Date EndTime = rs.getTimestamp("EndTime");
 					String Impact = rs.getString("Impact");
 					String OutageMsg = rs.getString("OutageMsg");
+					String BackupEligible = rs.getString("BackupEligible");
 
 					// If it is OPEN & Scheduled & Date(Now) > StartTime then set
 					// isOutageWithinScheduledRange to TRUE
@@ -269,6 +271,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
@@ -288,6 +291,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								voiceAffected = true;
@@ -330,6 +334,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
@@ -349,6 +354,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								dataAffected = true;
@@ -410,6 +416,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
@@ -531,9 +538,21 @@ public class Test_CLIOutage
 						allAffectedServices, foundScheduled);
 				ucdt.run();
 
+				// foundFlag2_BackupEligible = Yes -> Y
+				if (foundFlag2_BackupEligible.equals("Yes"))
+				{
+					foundFlag2_BackupEligible = "Y";
+				} else if (foundFlag2_BackupEligible.equals("No"))
+				{
+					foundFlag2_BackupEligible = "N";
+				} else
+				{
+					foundFlag2_BackupEligible = "N";
+				}
+
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, foundOutageMsg,
-						"NULL", "NULL");
+						foundFlag2_BackupEligible, "NULL");
 			}
 
 		} else
