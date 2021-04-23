@@ -533,10 +533,20 @@ public class WebSpectra implements InterfaceWebSpectra
 			int incidentDataCustomersAffected = 0;
 			int incidentVoiceCustomersAffected = 0;
 			int incidentIPTVCustomersAffected = 0;
+
+			// Backup Eligible - Addition of 23 Apr 2021
+			String backupEligible = "No";
+
 			for (String service : servicesAffected)
 			{
 				for (int i = 0; i < myHier.size(); i++)
 				{
+					// Backup Eligible - Addition of 23 Apr 2021
+					if (Impact.equals("LoS") && (service.equals("Voice") || service.equals("Data")))
+					{
+						backupEligible = "Yes";
+					}
+
 					// If the sumbission contains only root hierarchy then STOP submission
 					if (!myHier.get(i).contains("="))
 					{
@@ -902,17 +912,6 @@ public class WebSpectra implements InterfaceWebSpectra
 
 					// Concatenate locations with pipe
 					locationsAffected = String.join("|", uniqueLocationsSet);
-
-					// Backup Eligible - Addition of 23 Apr 2021
-					String backupEligible = "";
-
-					if (Impact.equals("LoS") && (service.equals("Voice") || service.equals("Data")))
-					{
-						backupEligible = "Yes";
-					} else
-					{
-						backupEligible = "No";
-					}
 
 					// Insert Values in Database
 					try
