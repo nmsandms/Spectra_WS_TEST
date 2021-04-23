@@ -163,9 +163,9 @@ public class Test_CLIOutage
 				ResultSet rs = null;
 				// Get Lines with IncidentStatus = "OPEN"
 				rs = s_dbs.getRows("Test_SubmittedIncidents",
-						new String[] { "WillBePublished", "IncidentID", "OutageID", "HierarchySelected", "Priority",
-								"AffectedServices", "Scheduled", "Duration", "StartTime", "EndTime", "Impact",
-								"OutageMsg" },
+						new String[] { "WillBePublished", "IncidentID", "OutageID", "BackupEligible",
+								"HierarchySelected", "Priority", "AffectedServices", "Scheduled", "Duration",
+								"StartTime", "EndTime", "Impact", "OutageMsg" },
 						new String[] { "IncidentStatus" }, new String[] { "OPEN" }, new String[] { "String" });
 
 				while (rs.next())

@@ -916,6 +916,7 @@ public class WebSpectra implements InterfaceWebSpectra
 					// Insert Values in Database
 					try
 					{
+						System.out.println("**** Backup Eligible = " + backupEligible);
 						s_dbs.insertValuesInTable("Test_SubmittedIncidents",
 								new String[] { "OpenReqID", "DateTime", "WillBePublished", "BackupEligible", "OutageID",
 										"IncidentStatus", "RequestTimestamp", "SystemID", "UserID", "IncidentID",
