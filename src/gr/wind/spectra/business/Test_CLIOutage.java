@@ -225,7 +225,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-
+						
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -297,7 +297,8 @@ public class Test_CLIOutage
 								voiceAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 							}
 						}
@@ -340,7 +341,8 @@ public class Test_CLIOutage
 								dataAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
 							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
@@ -360,7 +362,8 @@ public class Test_CLIOutage
 								dataAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 							}
 						}
@@ -402,7 +405,8 @@ public class Test_CLIOutage
 								iptvAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 								// Scheduled Yes & Rows Found & Outage Within Scheduled Range
 							} else if (WillBePublished.equals("Yes") && Integer.parseInt(numOfRowsFound) > 0
@@ -416,13 +420,13 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
-								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 							}
 						}
@@ -440,7 +444,7 @@ public class Test_CLIOutage
 						+ ServiceType);
 
 				// Update asynchronously - Add Caller to Caller data table (Test_Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
-				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "");
+				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
 				ucdt.run();
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "No", "none", "none", "none", "none",
@@ -533,26 +537,33 @@ public class Test_CLIOutage
 						allAffectedServices, foundScheduled, CLIProvided);
 				uRat.run();
 
-				// Update asynchronously - Add Caller to Caller data table (Test_Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
-				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, foundIncidentID,
-						allAffectedServices, foundScheduled);
-				ucdt.run();
-
-				// foundFlag2_BackupEligible = Yes -> Y
-				if (foundFlag2_BackupEligible.equals("Yes"))
+				// foundFlag2_BackupEligible = Yes -> backupEligible = Y
+				String backupEligible = "";
+				if (foundFlag2_BackupEligible != null)
 				{
-					foundFlag2_BackupEligible = "Y";
-				} else if (foundFlag2_BackupEligible.equals("No"))
-				{
-					foundFlag2_BackupEligible = "N";
+					if (foundFlag2_BackupEligible.equals("Yes"))
+					{
+						backupEligible = "Y";
+					} else if (foundFlag2_BackupEligible.equals("No"))
+					{
+						backupEligible = "N";
+					} else
+					{
+						backupEligible = "N";
+					}
 				} else
 				{
-					foundFlag2_BackupEligible = "N";
+					backupEligible = "N";
 				}
+
+				// Update asynchronously - Add Caller to Caller data table (Test_Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
+				Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, foundIncidentID,
+						allAffectedServices, foundScheduled, foundOutageMsg, backupEligible);
+				ucdt.run();
 
 				ponla = new ProductOfNLUActive(this.requestID, CLIProvided, "Yes", foundIncidentID, foundPriority,
 						allAffectedServices, foundScheduled, foundDuration, EndTimeString, foundImpact, foundOutageMsg,
-						foundFlag2_BackupEligible, "NULL");
+						backupEligible, "NULL");
 			}
 
 		} else
@@ -561,7 +572,7 @@ public class Test_CLIOutage
 			s_dbs.updateUsageStatisticsForMethod("NLU_Active_Neg");
 
 			// Update asynchronously - Add Caller to Caller data table (Test_Caller_Data) with empty values for IncidentID, Affected Services & Scheduling
-			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "");
+			Update_CallerDataTable ucdt = new Update_CallerDataTable(dbs, s_dbs, CLIProvided, "", "", "", "", "");
 			ucdt.run();
 
 			logger.info(
