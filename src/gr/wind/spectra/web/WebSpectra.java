@@ -1811,7 +1811,7 @@ public class WebSpectra implements InterfaceWebSpectra
 				hf.validateDelimitedValues("Service", Service, "\\|", new String[] { "Voice", "Data", "IPTV" });
 			}
 
-			Test_CLIOutage co = new Test_CLIOutage(dbs, s_dbs, RequestID);
+			Test_CLIOutage co = new Test_CLIOutage(dbs, s_dbs, RequestID, SystemID);
 			ponla = co.checkCLIOutage(RequestID, CLI, Service);
 
 		} catch (Exception e)

@@ -23,6 +23,7 @@ public class Test_CLIOutage
 	private DB_Operations dbs;
 	private s_DB_Operations s_dbs;
 	private String requestID;
+	private String systemID;
 
 	Help_Func hf = new Help_Func();
 
@@ -31,11 +32,12 @@ public class Test_CLIOutage
 	// Logger instance
 	private static final Logger logger = LogManager.getLogger(gr.wind.spectra.business.Test_CLIOutage.class.getName());
 
-	public Test_CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID) throws Exception
+	public Test_CLIOutage(DB_Operations dbs, s_DB_Operations s_dbs, String requestID, String systemID) throws Exception
 	{
 		this.dbs = dbs;
 		this.s_dbs = s_dbs;
 		this.requestID = requestID;
+		this.systemID = systemID;
 	}
 
 	public String replaceHierarchyColumns(String hierarchyProvided, String technology)
@@ -132,7 +134,8 @@ public class Test_CLIOutage
 			ServiceType = "Voice|Data|IPTV";
 		}
 
-		logger.info("ReqID: " + RequestID + " - Checking CLI Outage CLI: " + CLIProvided + " | " + ServiceType);
+		logger.info("SysID: " + systemID + " ReqID: " + RequestID + " - Checking CLI Outage CLI: " + CLIProvided + " | "
+				+ ServiceType);
 
 		// Split ServiceType
 		String delimiterCharacter = "\\|";
@@ -225,7 +228,7 @@ public class Test_CLIOutage
 									new String[] { "String" }, new String[] { "IncidentID", "OutageID" },
 									new String[] { IncidentID, String.valueOf(OutageID) },
 									new String[] { "String", "Integer" });
-						
+
 							if (numOfRowsUpdated > 0)
 							{
 								logger.debug("ReqID: " + RequestID + " - Scheduled Incident: " + IncidentID
@@ -277,7 +280,8 @@ public class Test_CLIOutage
 								voiceAffected = true;
 								logger.info("ReqID: " + RequestID + " - Found Affected CLI: " + CLIProvided + " | "
 										+ ServiceType + " from Non-scheduled INC: " + IncidentID + " | OutageID: "
-										+ OutageID + " | " + outageAffectedService);
+										+ OutageID + " | " + outageAffectedService + " | " + foundOutageMsg + " | "
+										+ BackupEligible);
 								break;
 
 							} else if (Integer.parseInt(numOfRowsFound) > 0 && Scheduled.equals("Yes")
@@ -400,6 +404,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
@@ -420,6 +425,7 @@ public class Test_CLIOutage
 								foundEndTime = EndTime;
 								foundImpact = Impact;
 								foundOutageMsg = OutageMsg;
+								foundFlag2_BackupEligible = BackupEligible;
 
 								foundAtLeastOneCLIAffected = true;
 								iptvAffected = true;
